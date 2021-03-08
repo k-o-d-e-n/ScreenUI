@@ -1,0 +1,16 @@
+PODS:
+  - ScreenUI (0.1.0)
+
+DEPENDENCIES:
+  - ScreenUI (from `../`)
+
+EXTERNAL SOURCES:
+  ScreenUI:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  ScreenUI: b695601feacce97b0c8e1e666776c1459f80d538
+
+PODFILE CHECKSUM: f6e38b3d9be4309324a2f241c91cd113df43e12a
+
+COCOAPODS: 1.10.1

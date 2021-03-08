@@ -1,0 +1,33 @@
+use_frameworks!
+
+abstract_target 'ScreenUI' do
+  pod 'ScreenUI', :path => '../'
+#  pod 'TransitionBehaviors', :path => '../../TransitionBehaviors'
+
+  target 'ScreenUI_UIKit' do
+    platform :ios, '9.0'
+    target 'ScreenUI_Tests' do
+      inherit! :search_paths
+
+    end
+  end
+
+  target 'ScreenUI_AppKit' do
+    platform :osx, '10.15'
+  end
+
+  target 'ScreenUI_SwiftUI' do
+    platform :ios, '14.0'
+  end
+
+end
+
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        if (['TransitionBehaviors'].include? target.name)
+            target.build_configurations.each do |configuration|
+                configuration.build_settings['SWIFT_VERSION'] = "4.2"
+            end
+        end
+    end
+end
