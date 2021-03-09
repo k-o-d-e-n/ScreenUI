@@ -41,7 +41,7 @@ extension Win {
 
 public protocol _TabsViewIdentity {}
 extension Tab {
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
     public struct SwiftUI<Root>: ContentScreen where Root: ScreenBuilder {
         public typealias NestedScreen = Self
         public typealias Content = TabsView
@@ -98,14 +98,14 @@ extension Tab {
         }
     }
 }
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
 extension Tab.SwiftUI {
     public init(@ContentBuilder tabs builder: () -> Root) {
         self.init(root: builder())
     }
 }
 extension Nav {
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
     public struct SwiftUI<Root>: ScreenContainer where Root: Screen, Root.Content: View {
         public typealias Context = Root.Context
         public typealias Content = NavigationView<Root.Content>
@@ -161,7 +161,7 @@ extension Nav.Push {
                 isActive: state.projectedValue,
                 label: { actionView }
             )
-            #if !os(macOS)
+            #if os(iOS)
             return AnyView(link.isDetailLink(isDetail))
             #else
             return AnyView(link)
@@ -417,12 +417,12 @@ extension Win.SwiftUI {
     public func index(of keyPath: PartialKeyPath<Root.PathFrom>) -> Int { _root.index(of: keyPath) }
     public func keyPath(at index: Int) -> PartialKeyPath<Root.PathFrom> { _root.keyPath(at: index) }
 }
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
 extension Tab.SwiftUI {
     public func index(of keyPath: PartialKeyPath<Root.PathFrom>) -> Int { root.index(of: keyPath) }
     public func keyPath(at index: Int) -> PartialKeyPath<Root.PathFrom> { root.keyPath(at: index) }
 }
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
 extension Nav.SwiftUI {
     public func index(of keyPath: PartialKeyPath<Root.PathFrom>) -> Int { _root.index(of: keyPath) }
     public func keyPath(at index: Int) -> PartialKeyPath<Root.PathFrom> { _root.keyPath(at: index) }

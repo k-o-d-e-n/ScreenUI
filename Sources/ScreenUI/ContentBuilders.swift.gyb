@@ -27,6 +27,8 @@ extension ContentBuilder {
     }
 }
 
+#if os(macOS) || os(iOS) || os(tvOS)
+
 % for count in type_names:
 public struct ${type_names[count]}Arr<${', '.join(elements[:count])}>: ScreenBuilder, _ScreenBuilder
 where ${', '.join(map(lambda x: x + ': Screen', elements[:count]))},
@@ -73,6 +75,8 @@ extension ContentBuilder {
     }
     % end
 }
+
+#endif
 
 #if canImport(SwiftUI)
 import SwiftUI

@@ -20,15 +20,15 @@ public enum Presentation {
     public enum Dismiss {}
 }
 
-#if !os(macOS)
+#if !os(macOS) && !os(watchOS)
 public typealias Controller = UIViewController
-#else
+#elseif os(macOS)
 public typealias Controller = NSViewController
 #endif
 
 /// - Namespaces
 
-#if !os(macOS)
+#if !os(macOS) && !os(watchOS)
 public enum UIKit {
     public typealias Window<Root> = Win.UIKit<Root> where Root: Screen, Root.Content: UIViewController
     public typealias Navigation<Root> = Nav.UIKit<Root> where Root: Screen, Root.Content: UIViewController
@@ -50,7 +50,7 @@ public protocol UIKitNamespace {
     typealias Pop<From> = Nav.Push.Pop.UIKit<From> where From: ContentScreen, From.Content: UIViewController
     typealias Dismiss<From> = Presentation.Dismiss.UIKit<From> where From: ContentScreen, From.Content: UIViewController
 }
-#else
+#elseif os(macOS)
 public enum AppKit {
     public typealias Window<Root> = Win.AppKit<Root> where Root: Screen, Root.Content: NSViewController
     public typealias Tabs<Root> = Tab.AppKit<Root> where Root: ScreenBuilder, Root.Content == [NSViewController]
@@ -68,7 +68,7 @@ public protocol AppKitNamespace {
 }
 #endif
 
-#if canImport(SwiftUI)
+#if canImport(SwiftUI) && canImport(Combine)
 import SwiftUI
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -77,11 +77,9 @@ public enum SwiftUI {
     public typealias Window<Root> = Win.SwiftUI<Root> where Root: Screen, Root.Content: View
     public typealias Navigation<Root> = Nav.SwiftUI<Root> where Root: Screen, Root.Content: View
     public typealias Tabs<Root> = Tab.SwiftUI<Root> where Root: ScreenBuilder
-//
+
     public typealias Push<From, To> = Nav.Push.SwiftUI<From, To> where From: ContentScreen, To: Screen, To.Content: View
     public typealias Present<From, To> = Presentation.SwiftUI<From, To> where From: ContentScreen, To: Screen, To.Content: View
-//    public typealias Pop<From> = NavPop.SwiftUI<From> where From: FlowPoint
-//    public typealias Dismiss<From> = Dismission.SwiftUI<From> where From: FlowPoint
 }
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -90,10 +88,8 @@ public protocol SwiftUINamespace {
     typealias Window<Root> = Win.SwiftUI<Root> where Root: Screen, Root.Content: View
     typealias Navigation<Root> = Nav.SwiftUI<Root> where Root: Screen, Root.Content: View
     typealias Tabs<Root> = Tab.SwiftUI<Root> where Root: ScreenBuilder
-//
+
     typealias Push<From, To> = Nav.Push.SwiftUI<From, To> where From: ContentScreen, To: Screen, To.Content: View
     typealias Present<From, To> = Presentation.SwiftUI<From, To> where From: ContentScreen, To: Screen, To.Content: View
-//    typealias Pop<From> = NavPop.SwiftUI<From> where From: FlowPoint
-//    typealias Dismiss<From> = Dismission.SwiftUI<From> where From: FlowPoint
 }
 #endif

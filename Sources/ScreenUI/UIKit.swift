@@ -7,7 +7,7 @@
 
 import Foundation
 
-#if !os(macOS)
+#if !os(macOS) && !os(watchOS)
 import UIKit
 
 extension Win {
@@ -18,7 +18,7 @@ extension Win {
         public struct Context {
             public enum WindowScene {
                 case `default`
-                @available(iOS 13.0, *)
+                @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
                 case scene(UIWindowScene?)
             }
 
@@ -44,7 +44,7 @@ extension Win {
             let window: UIWindow
             switch context.scene {
             case .scene(.some(let scene)):
-                if #available(iOS 13.0, *) {
+                if #available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *) {
                     window = UIWindow(windowScene: scene)
                 } else {
                     window = UIWindow()

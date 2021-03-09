@@ -23,6 +23,8 @@ extension ContentBuilder {
     }
 }
 
+#if os(macOS) || os(iOS) || os(tvOS)
+
 public struct TwoArr<T0, T1>: ScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen,
 T0.Content: Controller, T1.Content: Controller
@@ -471,7 +473,9 @@ extension ContentBuilder {
     }
 }
 
-#if canImport(SwiftUI)
+#endif
+
+#if canImport(SwiftUI) && canImport(Combine)
 import SwiftUI
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)

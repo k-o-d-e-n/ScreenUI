@@ -67,7 +67,7 @@ class _AnyTransition_<From, Context, To>: UnknownPathProvider where From: Screen
     func index<U>(of keyPath: PartialKeyPath<U>) -> Int { fatalError("unimplemented") }
     func keyPath<U,T>(at index: Int) -> KeyPath<U, T> { fatalError("unimplemented") }
 
-    #if canImport(SwiftUI)
+    #if canImport(SwiftUI) && canImport(Combine)
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func move<V>(_ state: Binding<Bool>, screenState: ScreenState<To.NestedScreen>, actionView: V, context: Context, completion: (() -> Void)?)
     -> AnyView where V: View {
@@ -135,7 +135,7 @@ public struct AnyTransition<From, Context, To>: Transition where From: Screen, T
 }
 extension AnyTransition: ScreenTransition where From: ContentScreen, To: ContentScreen {}
 
-#if canImport(SwiftUI)
+#if canImport(SwiftUI) && canImport(Combine)
 final class __AnyTransition_SwiftUI<Base>: _AnyTransition_<Base.From, Base.Context, Base.To> where Base: SwiftUICompatibleTransition {
     let base: Base
     init(base: Base) {

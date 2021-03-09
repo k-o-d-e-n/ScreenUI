@@ -21,8 +21,13 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/k-o-d-e-n/ScreenUI.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/K_o_D_e_N'
 
+  s.swift_version = '5.3'
+
   s.ios.deployment_target = '9.0'
   s.macos.deployment_target = '10.15'
+  s.tvos.deployment_target = '9.0'
+  s.watchos.deployment_target = '7.0'
 
   s.source_files = 'Sources/ScreenUI/**/*'
+  s.exclude_files = 'Sources/**/*.gyb'
 end
