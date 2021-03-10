@@ -1,6 +1,7 @@
-# ScreenUI
+# 📲 ScreenUI
 
 A multi-platform, multi-paradigm routing framework for iOS/macOS and others, the replacement of Storyboard.
+
 Supports `UIKit`, `AppKit`, `SwiftUI`.
 
 ### Real world example
@@ -79,6 +80,7 @@ Supports `UIKit`, `AppKit`, `SwiftUI`.
   + [Transition](#transition)
   + [Screen path](#screen-path)
   + [Content builders](#content-builders)
+  + [Cross-platform](#cross-platform)
   + [SwiftUI](#swiftui)
   + [UIKit](#uikit)
   + [AppKit](#appkit)
@@ -91,7 +93,7 @@ Supports `UIKit`, `AppKit`, `SwiftUI`.
 + Deep transitions (deep-link)
 + Abstracted implementation of the transition and its unification
 + Screen constants
-+ Multi-platform core
++ Cross-platform core
 + Fully strong-typed code
 
 With `ScreenUI` you will forget about such methods, like `func pushViewController(_:)`,  `func present(_:)`, about implementations are based on enums and reducers.
@@ -154,6 +156,8 @@ All you need in the next step is to build a [screen tree](#real-world-example) a
 transitionsMap.router[root: .default][case: \.0, ()].move(from: (), completion: nil)
 ```
 
+> Due to the specific interface of **SwiftUI** some things have small changes in API. 
+
 ## Deep dive
 
 ### Screen
@@ -192,7 +196,7 @@ public struct Navigation<Root>: ScreenContainer where Root: Screen, Root.Content
 }
 ```
 
-[Read more]() about screens.
+> [Read more]() about screens.
 
 ### Transition
 
@@ -224,17 +228,106 @@ public struct Present<From, Too>: ScreenTransition {
 }
 ```
 
-[Read more]() about transitions.
+To make your screens more flexible, you can define type-erased transitions:
+- `AnyScreenTransition` - supports transitions where `Context` is equal to *context* of the target content screen.
+- `PreciseTransition` - supports transitions where `Context` is equal to *context* of the target container screen.
+
+So, when you will building [screen tree](#real-world-example), you can set up in one scenario one transition, another transition in the another scenario for the same screen.
+
+> [Read more]() about transitions.
 
 ### Screen path
 
+`Router` provides a subscript interface to build the path to the screen using  *Swift Key-path expressions*:
+
+```swift
+///    [Initial screen]         [Conditional screen]      [Tab screen]     [Some next screen in scenario]    [Run chain from root screen content]
+///       /                             |                       |            /                                  /
+router[root: .init(root: <%context%>][case: \.2, <%context%>][select: \.1][move: \.nextScreen, <%context%>].move(from: (), completion: nil)
+```
+
 ### Content builders
+
+Some screens can have dynamic content, for example `Tabs`. Therefore the framework provides `ScreenBuilder` protocol:
+
+```swift
+public protocol ScreenBuilder: PathProvider {
+    associatedtype Content
+    associatedtype Context
+
+    func makeContent<From>(_ context: Context, router: Router<From>) -> Content where From: Screen, From.PathFrom == PathFrom
+}
+```
+
+And of course for such instances is necessary Swift's function builder:
+
+```swift
+@_functionBuilder
+public struct ContentBuilder {}
+```
+
+### Cross-platform
+
+Framework API has cross-platform namespaces:
+
+```swift
+public enum Win {} /// Window implementations
+public enum Nav {} /// Navigation implementations
+public enum Tab {} /// Tabs implementations
+extension Nav {
+    public enum Push { /// Push implementations
+        public enum Pop {} /// Pop implementations
+    }
+}
+public enum Presentation { /// Present implementations
+    public enum Dismiss {} /// Dismiss implementations
+}
+```
+
+For convenience, the framework provides protocols that enable typealiases to the nested types: `UIKitNamespace`, `AppKitNamespace`, `SwiftUINamespace`.
+Apply one of them and you can write crossplatform code where:
+
+**Screens:**
+
+- `Window` - a screen container that wraps a initial screen of your app.
+- `Navigation` - a screen container that creates navigation stack.
+- `Tabs` - a content screen that organize multiple screens to tab view interface.
+
+**Transitions**
+
+- `Push` - a transition that pushes a new screen onto the navigation stack, with the corresponding `Pop` transition.
+- `Present` - a transition that presents a new screen, covering the current screen, with the corresponding `Dismiss` transition.
 
 ### SwiftUI
 
+**Supported screens:**
+- `Window` :white_check_mark:
+- `Navigation` :white_check_mark:
+- `Tabs` :white_check_mark:
+
+**Supported transitions:**
+- `Push`/`Pop` :white_check_mark:
+- `Present` :white_check_mark:
+
 ### UIKit
 
+**Supported screens:**
+- `Window` :white_check_mark:
+- `Navigation` :white_check_mark:
+- `Tabs` :white_check_mark:
+
+**Supported transitions:**
+- `Push`/`Pop` :white_check_mark:
+- `Present` :white_check_mark:
+
 ### AppKit
+
+**Supported screens:**
+- `Window` :white_check_mark:
+- `Tabs` :white_check_mark:
+
+**Supported transitions:**
+- `Present` :white_check_mark:
 
 ## Installation
 
