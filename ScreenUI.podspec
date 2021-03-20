@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ScreenUI'
-  s.version          = '1.0.0'
+  s.version          = '1.1.0'
   s.summary          = 'A multi-platform, multi-paradigm routing framework. `UIKit`, `AppKit`, `SwiftUI`'
 
   s.description      = <<-DESC
@@ -27,7 +27,15 @@ Pod::Spec.new do |s|
   s.macos.deployment_target = '10.15'
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '7.0'
-
-  s.source_files = 'Sources/ScreenUI/**/*'
-  s.exclude_files = 'Sources/**/*.gyb'
+  s.default_subspec = 'Release'
+  s.subspec 'Release' do |r|
+      r.source_files = 'Sources/ScreenUI/**/*'
+      r.exclude_files = 'Sources/**/*.gyb'
+  end
+  s.subspec 'Beta' do |b|
+      b.dependency 'ScreenUI/Release'
+      b.pod_target_xcconfig = {
+        'SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]' => '$(inherited) SCREENUI_BETA'
+      }
+  end
 end

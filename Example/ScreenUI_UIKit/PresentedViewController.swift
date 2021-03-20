@@ -12,9 +12,9 @@ import AppKit
 import UIKit
 #endif
 
-final class PresentedViewController: Controller {
+final class PresentedViewController: RoutingSurface {
     let state: Screens.Router<PresentedScreen>
-    let context: Color
+    var context: Color { didSet { isViewLoaded ? view.backgroundColor = context : () } }
 
     init(state: Screens.Router<PresentedScreen>, context: PresentedScreen.Context) {
         self.state = state

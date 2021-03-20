@@ -8,6 +8,9 @@
 
 import Foundation
 import ScreenUI
+#if SWIFTUI
+import SwiftUI
+#endif
 
 #if APPKIT
 struct Navigation<S>: Screen where S: Screen {
@@ -20,9 +23,7 @@ struct Navigation<S>: Screen where S: Screen {
         self.base = base
     }
 
-    subscript<T>(next path: KeyPath<S.PathFrom, T>) -> T {
-        base[next: path]
-    }
+    subscript<T>(next path: KeyPath<S.PathFrom, T>) -> T { base[next: path] }
 
     func makeContent(_ context: Context, router: Router<NestedScreen>) -> ContentResult<Navigation<S>> {
         base.makeContent(context, router: router)
@@ -50,21 +51,17 @@ struct WindowInit<From, Too>: ScreenTransition where From: ContentScreen, From.C
     typealias To = Too.NestedScreen
     let to: Too
 
-    subscript<T>(next path: KeyPath<To.PathFrom, T>) -> T {
-        to[next: path]
-    }
-
-    func move(from screen: From.Content, state: ScreenState<From.NestedScreen>, with context: Too.Context, completion: (() -> Void)?) -> TransitionResult<To> {
-        let state = ScreenState<To>()
-        let (c1, c0) = to.makeContent(context, router: .router(from: to, with: state))
-        screen.window = c1
-        c1.makeKeyAndVisible()
-        return (state, c0)
-    }
-}
-extension WindowInit {
+    subscript<T>(next path: KeyPath<To.PathFrom, T>) -> T { to[next: path] }
     func index(of keyPath: PartialKeyPath<To.PathFrom>) -> Int { to.index(of: keyPath) }
     func keyPath(at index: Int) -> PartialKeyPath<To.PathFrom> { to.keyPath(at: index) }
+
+    func move(from screen: From.Content, state: ContentScreenState<From.NestedScreen>, with context: Too.Context, completion: (() -> Void)?) -> TransitionResult<From, To> {
+        let state = TransitionState<From, To>()
+        let (c1, c0) = to.makeContent(context, state: state)
+        screen.window = c1
+        c1.makeKeyAndVisible()
+        return (state, (c0, c0))
+    }
 }
 
 #if APPKIT || UIKIT
@@ -85,5 +82,44 @@ struct Application<Delegate, Root>: ScreenContainer where Root: Screen, Delegate
         c1.makeKeyAndVisible()
         return (delegate, c0)
     }
+    func updateContent(_ content: Delegate, with context: Root.Context) {
+        root.updateContent(content.window!, with: context)
+    }
+    func updateNestedContent(_ content: Root.NestedScreen.Content, with context: Root.Context) {
+        root.updateNestedContent(content, with: context)
+    }
 }
 #endif
+
+protocol ScreenAppearance {
+    var title: String { get }
+    var tabImage: Image? { get }
+}
+extension ScreenAppearance {
+    var tabImage: Image? { nil }
+}
+#if SWIFTUI
+extension Screen where Self.PathFrom: ScreenAppearance, Content: View {
+    func tabItem() -> MapContent<Self, AnyView> {
+        mapContent { (ctn, _, tab) in
+            AnyView(ctn.tabItem {
+                Text(tab[next: \.title])
+                tab[next: \.tabImage]
+            })
+        }
+    }
+}
+#else
+extension Screen where Self.PathFrom: ScreenAppearance, Content: RoutingSurface {
+    func tabItem() -> MapContent<Self, Content> {
+        mapContent { (content, _, tab) in
+            #if UIKIT
+            content.tabBarItem.title = tab[next: \.title]
+            content.tabBarItem.image = tab[next: \.tabImage]
+            #endif
+            return content
+        }
+    }
+}
+#endif
+

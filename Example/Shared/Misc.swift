@@ -9,16 +9,24 @@
 #if SWIFTUI
 import SwiftUI
 
+typealias Image = SwiftUI.Image
 typealias Color = SwiftUI.Color
+typealias RoutingSurface = View
 
 #elseif APPKIT
 import AppKit
 
-typealias Controller = NSViewController
+typealias RoutingSurface = NSViewController
 typealias TabsController = NSTabViewController
 typealias Color = NSColor
+typealias Image = NSImage
 typealias Button = NSButton
 
+extension NSImage {
+    convenience init?(systemName: String) {
+        self.init(systemSymbolName: systemName, accessibilityDescription: nil)
+    }
+}
 extension NSView {
     var backgroundColor: NSColor? {
         set { layer?.backgroundColor = newValue?.cgColor }
@@ -35,8 +43,9 @@ extension NSViewController {
 import UIKit
 
 typealias TabsController = UITabBarController
-typealias Controller = UIViewController
+typealias RoutingSurface = UIViewController
 typealias Color = UIColor
+typealias Image = UIImage
 typealias Button = UIButton
 extension UIButton {
     convenience init(title: String, target: Any?, action: Selector?) {

@@ -10,7 +10,8 @@ import UIKit
 
 final class DetailViewController: UIViewController {
     let state: Screens.Router<DetailScreen>
-    let text: String
+    weak var detailLabel: UILabel?
+    var text: String { didSet { detailLabel?.text = text } }
 
     init(state: Screens.Router<DetailScreen>, context: DetailScreen.Context) {
         self.state = state
@@ -33,6 +34,7 @@ final class DetailViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Next", style: .done, target: self, action: #selector(openSubdetail))
 
         let detailLabel = UILabel()
+        self.detailLabel = detailLabel
         detailLabel.translatesAutoresizingMaskIntoConstraints = false
         detailLabel.text = text
         view.addSubview(detailLabel)
@@ -66,6 +68,6 @@ final class DetailViewController: UIViewController {
         appDelegate.screens.router[root: .init(root: (tab1: .init(), tab2: .init()))][select: \.1][move: \.nextScreen, .blue].move(from: (), completion: nil)
     }
     @objc func openSubdetail() {
-        state.move(\.nextScreen, from: self, with: "SUB DETAIL!11")
+        state.move(if: \.nextScreen, from: self, with: "SUB DETAIL!11")
     }
 }

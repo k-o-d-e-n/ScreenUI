@@ -7,14 +7,14 @@ public struct One<S>: ScreenBuilder where S: Screen {
     public typealias Content = S.Content
     public typealias Context = S.Context
     public let _0: S
-    public subscript<T>(next path: KeyPath<Self, T>) -> T {
-        self[keyPath: path]
-    }
     public func index(of keyPath: PartialKeyPath<Self>) -> Int { 0 }
     public func keyPath(at index: Int) -> PartialKeyPath<Self> { \._0 }
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content where From: Screen, From.PathFrom == Self {
-        let (c1, _) = _0.makeContent(context, router: router.next(from: _0, isActive: true))
+        let (c1, _) = _0.makeContent(context, router: router.next(path: \._0, isActive: true))
         return c1
+    }
+    public func updateContent(_ content: S.Content, with context: S.Context) {
+        _0.updateContent(content, with: context)
     }
 }
 extension ContentBuilder {
@@ -23,782 +23,686 @@ extension ContentBuilder {
     }
 }
 
-#if os(macOS) || os(iOS) || os(tvOS)
+public protocol TwoScreenBuilder: ScreenBuilder
+where PathFrom == (T0, T1) {
+    associatedtype T0: Screen
+    associatedtype T1: Screen
+}
+extension TwoScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        case \PathFrom.0: return 0
+        case \PathFrom.1: return 1
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        case 0: return \.0
+        case 1: return \.1
+        default: return \.0
+        }
+    }
+}
+public protocol ThreeScreenBuilder: ScreenBuilder
+where PathFrom == (T0, T1, T2) {
+    associatedtype T0: Screen
+    associatedtype T1: Screen
+    associatedtype T2: Screen
+}
+extension ThreeScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        case \PathFrom.0: return 0
+        case \PathFrom.1: return 1
+        case \PathFrom.2: return 2
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        case 0: return \.0
+        case 1: return \.1
+        case 2: return \.2
+        default: return \.0
+        }
+    }
+}
+public protocol FourScreenBuilder: ScreenBuilder
+where PathFrom == (T0, T1, T2, T3) {
+    associatedtype T0: Screen
+    associatedtype T1: Screen
+    associatedtype T2: Screen
+    associatedtype T3: Screen
+}
+extension FourScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        case \PathFrom.0: return 0
+        case \PathFrom.1: return 1
+        case \PathFrom.2: return 2
+        case \PathFrom.3: return 3
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        case 0: return \.0
+        case 1: return \.1
+        case 2: return \.2
+        case 3: return \.3
+        default: return \.0
+        }
+    }
+}
+public protocol FiveScreenBuilder: ScreenBuilder
+where PathFrom == (T0, T1, T2, T3, T4) {
+    associatedtype T0: Screen
+    associatedtype T1: Screen
+    associatedtype T2: Screen
+    associatedtype T3: Screen
+    associatedtype T4: Screen
+}
+extension FiveScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        case \PathFrom.0: return 0
+        case \PathFrom.1: return 1
+        case \PathFrom.2: return 2
+        case \PathFrom.3: return 3
+        case \PathFrom.4: return 4
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        case 0: return \.0
+        case 1: return \.1
+        case 2: return \.2
+        case 3: return \.3
+        case 4: return \.4
+        default: return \.0
+        }
+    }
+}
+public protocol SixScreenBuilder: ScreenBuilder
+where PathFrom == (T0, T1, T2, T3, T4, T5) {
+    associatedtype T0: Screen
+    associatedtype T1: Screen
+    associatedtype T2: Screen
+    associatedtype T3: Screen
+    associatedtype T4: Screen
+    associatedtype T5: Screen
+}
+extension SixScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        case \PathFrom.0: return 0
+        case \PathFrom.1: return 1
+        case \PathFrom.2: return 2
+        case \PathFrom.3: return 3
+        case \PathFrom.4: return 4
+        case \PathFrom.5: return 5
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        case 0: return \.0
+        case 1: return \.1
+        case 2: return \.2
+        case 3: return \.3
+        case 4: return \.4
+        case 5: return \.5
+        default: return \.0
+        }
+    }
+}
+public protocol SevenScreenBuilder: ScreenBuilder
+where PathFrom == (T0, T1, T2, T3, T4, T5, T6) {
+    associatedtype T0: Screen
+    associatedtype T1: Screen
+    associatedtype T2: Screen
+    associatedtype T3: Screen
+    associatedtype T4: Screen
+    associatedtype T5: Screen
+    associatedtype T6: Screen
+}
+extension SevenScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        case \PathFrom.0: return 0
+        case \PathFrom.1: return 1
+        case \PathFrom.2: return 2
+        case \PathFrom.3: return 3
+        case \PathFrom.4: return 4
+        case \PathFrom.5: return 5
+        case \PathFrom.6: return 6
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        case 0: return \.0
+        case 1: return \.1
+        case 2: return \.2
+        case 3: return \.3
+        case 4: return \.4
+        case 5: return \.5
+        case 6: return \.6
+        default: return \.0
+        }
+    }
+}
+public protocol EightScreenBuilder: ScreenBuilder
+where PathFrom == (T0, T1, T2, T3, T4, T5, T6, T7) {
+    associatedtype T0: Screen
+    associatedtype T1: Screen
+    associatedtype T2: Screen
+    associatedtype T3: Screen
+    associatedtype T4: Screen
+    associatedtype T5: Screen
+    associatedtype T6: Screen
+    associatedtype T7: Screen
+}
+extension EightScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        case \PathFrom.0: return 0
+        case \PathFrom.1: return 1
+        case \PathFrom.2: return 2
+        case \PathFrom.3: return 3
+        case \PathFrom.4: return 4
+        case \PathFrom.5: return 5
+        case \PathFrom.6: return 6
+        case \PathFrom.7: return 7
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        case 0: return \.0
+        case 1: return \.1
+        case 2: return \.2
+        case 3: return \.3
+        case 4: return \.4
+        case 5: return \.5
+        case 6: return \.6
+        case 7: return \.7
+        default: return \.0
+        }
+    }
+}
+public protocol NineScreenBuilder: ScreenBuilder
+where PathFrom == (T0, T1, T2, T3, T4, T5, T6, T7, T8) {
+    associatedtype T0: Screen
+    associatedtype T1: Screen
+    associatedtype T2: Screen
+    associatedtype T3: Screen
+    associatedtype T4: Screen
+    associatedtype T5: Screen
+    associatedtype T6: Screen
+    associatedtype T7: Screen
+    associatedtype T8: Screen
+}
+extension NineScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        case \PathFrom.0: return 0
+        case \PathFrom.1: return 1
+        case \PathFrom.2: return 2
+        case \PathFrom.3: return 3
+        case \PathFrom.4: return 4
+        case \PathFrom.5: return 5
+        case \PathFrom.6: return 6
+        case \PathFrom.7: return 7
+        case \PathFrom.8: return 8
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        case 0: return \.0
+        case 1: return \.1
+        case 2: return \.2
+        case 3: return \.3
+        case 4: return \.4
+        case 5: return \.5
+        case 6: return \.6
+        case 7: return \.7
+        case 8: return \.8
+        default: return \.0
+        }
+    }
+}
 
-public struct TwoArr<T0, T1>: ScreenBuilder, _ScreenBuilder
+#if os(macOS) || os(iOS) || os(tvOS)
+public struct OneController<S>: ScreenBuilder where S: Screen, S.Content: Controller {
+    public typealias Content = [Controller]
+    public typealias Context = S.Context
+    let _0: S
+    public func index(of keyPath: PartialKeyPath<Self>) -> Int { 0 }
+    public func keyPath(at index: Int) -> PartialKeyPath<Self> { \._0 }
+    public func makeContent<From>(_ context: S.Context, router: Router<From>) -> [Controller] where From : ContentScreen, Self.PathFrom == From.PathFrom {
+        [makeContent(at: \._0, isActive: true, context: context, router: router)]
+    }
+    public func updateContent(_ content: [Controller], with context: S.Context) {
+        _0.updateContent(content[0] as! S.Content, with: context)
+    }
+}
+public struct TwoController<T0, T1>: TwoScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen,
 T0.Content: Controller, T1.Content: Controller
 {
     public typealias PathFrom = (T0, T1)
     public typealias Context = (T0.Context, T1.Context)
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
-        let r0 = router.next(from: _0.0, path: \.0, isActive: true)
-        let (c0, c00) = _0.0.makeContent(context.0, router: r0)
-        r0.state.surface = c00
-        let r1 = router.next(from: _0.1, path: \.1, isActive: false)
-        let (c1, c01) = _0.1.makeContent(context.1, router: r1)
-        r1.state.surface = c01
+        let c0 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
+        let c1 = makeContent(at: \.1, isActive: false, context: context.1, router: router)
         return [c0, c1]
     }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        _0.0.updateContent(content[0] as! T0.Content, with: context.0)
+        _0.1.updateContent(content[1] as! T1.Content, with: context.1)
+    }
 }
-public struct ThreeArr<T0, T1, T2>: ScreenBuilder, _ScreenBuilder
+public struct ThreeController<T0, T1, T2>: ThreeScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen,
 T0.Content: Controller, T1.Content: Controller, T2.Content: Controller
 {
     public typealias PathFrom = (T0, T1, T2)
     public typealias Context = (T0.Context, T1.Context, T2.Context)
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
-        let r0 = router.next(from: _0.0, path: \.0, isActive: true)
-        let (c0, c00) = _0.0.makeContent(context.0, router: r0)
-        r0.state.surface = c00
-        let r1 = router.next(from: _0.1, path: \.1, isActive: false)
-        let (c1, c01) = _0.1.makeContent(context.1, router: r1)
-        r1.state.surface = c01
-        let r2 = router.next(from: _0.2, path: \.2, isActive: false)
-        let (c2, c02) = _0.2.makeContent(context.2, router: r2)
-        r2.state.surface = c02
+        let c0 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
+        let c1 = makeContent(at: \.1, isActive: false, context: context.1, router: router)
+        let c2 = makeContent(at: \.2, isActive: false, context: context.2, router: router)
         return [c0, c1, c2]
     }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        _0.0.updateContent(content[0] as! T0.Content, with: context.0)
+        _0.1.updateContent(content[1] as! T1.Content, with: context.1)
+        _0.2.updateContent(content[2] as! T2.Content, with: context.2)
+    }
 }
-public struct FourArr<T0, T1, T2, T3>: ScreenBuilder, _ScreenBuilder
+public struct FourController<T0, T1, T2, T3>: FourScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen,
 T0.Content: Controller, T1.Content: Controller, T2.Content: Controller, T3.Content: Controller
 {
     public typealias PathFrom = (T0, T1, T2, T3)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context)
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
-        let r0 = router.next(from: _0.0, path: \.0, isActive: true)
-        let (c0, c00) = _0.0.makeContent(context.0, router: r0)
-        r0.state.surface = c00
-        let r1 = router.next(from: _0.1, path: \.1, isActive: false)
-        let (c1, c01) = _0.1.makeContent(context.1, router: r1)
-        r1.state.surface = c01
-        let r2 = router.next(from: _0.2, path: \.2, isActive: false)
-        let (c2, c02) = _0.2.makeContent(context.2, router: r2)
-        r2.state.surface = c02
-        let r3 = router.next(from: _0.3, path: \.3, isActive: false)
-        let (c3, c03) = _0.3.makeContent(context.3, router: r3)
-        r3.state.surface = c03
+        let c0 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
+        let c1 = makeContent(at: \.1, isActive: false, context: context.1, router: router)
+        let c2 = makeContent(at: \.2, isActive: false, context: context.2, router: router)
+        let c3 = makeContent(at: \.3, isActive: false, context: context.3, router: router)
         return [c0, c1, c2, c3]
     }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        _0.0.updateContent(content[0] as! T0.Content, with: context.0)
+        _0.1.updateContent(content[1] as! T1.Content, with: context.1)
+        _0.2.updateContent(content[2] as! T2.Content, with: context.2)
+        _0.3.updateContent(content[3] as! T3.Content, with: context.3)
+    }
 }
-public struct FiveArr<T0, T1, T2, T3, T4>: ScreenBuilder, _ScreenBuilder
+public struct FiveController<T0, T1, T2, T3, T4>: FiveScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen,
 T0.Content: Controller, T1.Content: Controller, T2.Content: Controller, T3.Content: Controller, T4.Content: Controller
 {
     public typealias PathFrom = (T0, T1, T2, T3, T4)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context)
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
-        let r0 = router.next(from: _0.0, path: \.0, isActive: true)
-        let (c0, c00) = _0.0.makeContent(context.0, router: r0)
-        r0.state.surface = c00
-        let r1 = router.next(from: _0.1, path: \.1, isActive: false)
-        let (c1, c01) = _0.1.makeContent(context.1, router: r1)
-        r1.state.surface = c01
-        let r2 = router.next(from: _0.2, path: \.2, isActive: false)
-        let (c2, c02) = _0.2.makeContent(context.2, router: r2)
-        r2.state.surface = c02
-        let r3 = router.next(from: _0.3, path: \.3, isActive: false)
-        let (c3, c03) = _0.3.makeContent(context.3, router: r3)
-        r3.state.surface = c03
-        let r4 = router.next(from: _0.4, path: \.4, isActive: false)
-        let (c4, c04) = _0.4.makeContent(context.4, router: r4)
-        r4.state.surface = c04
+        let c0 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
+        let c1 = makeContent(at: \.1, isActive: false, context: context.1, router: router)
+        let c2 = makeContent(at: \.2, isActive: false, context: context.2, router: router)
+        let c3 = makeContent(at: \.3, isActive: false, context: context.3, router: router)
+        let c4 = makeContent(at: \.4, isActive: false, context: context.4, router: router)
         return [c0, c1, c2, c3, c4]
     }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        _0.0.updateContent(content[0] as! T0.Content, with: context.0)
+        _0.1.updateContent(content[1] as! T1.Content, with: context.1)
+        _0.2.updateContent(content[2] as! T2.Content, with: context.2)
+        _0.3.updateContent(content[3] as! T3.Content, with: context.3)
+        _0.4.updateContent(content[4] as! T4.Content, with: context.4)
+    }
 }
-public struct SixArr<T0, T1, T2, T3, T4, T5>: ScreenBuilder, _ScreenBuilder
+public struct SixController<T0, T1, T2, T3, T4, T5>: SixScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen,
 T0.Content: Controller, T1.Content: Controller, T2.Content: Controller, T3.Content: Controller, T4.Content: Controller, T5.Content: Controller
 {
     public typealias PathFrom = (T0, T1, T2, T3, T4, T5)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context)
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        case \PathFrom.5: return 5
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        case 5: return \.5
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4, T5)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
-        let r0 = router.next(from: _0.0, path: \.0, isActive: true)
-        let (c0, c00) = _0.0.makeContent(context.0, router: r0)
-        r0.state.surface = c00
-        let r1 = router.next(from: _0.1, path: \.1, isActive: false)
-        let (c1, c01) = _0.1.makeContent(context.1, router: r1)
-        r1.state.surface = c01
-        let r2 = router.next(from: _0.2, path: \.2, isActive: false)
-        let (c2, c02) = _0.2.makeContent(context.2, router: r2)
-        r2.state.surface = c02
-        let r3 = router.next(from: _0.3, path: \.3, isActive: false)
-        let (c3, c03) = _0.3.makeContent(context.3, router: r3)
-        r3.state.surface = c03
-        let r4 = router.next(from: _0.4, path: \.4, isActive: false)
-        let (c4, c04) = _0.4.makeContent(context.4, router: r4)
-        r4.state.surface = c04
-        let r5 = router.next(from: _0.5, path: \.5, isActive: false)
-        let (c5, c05) = _0.5.makeContent(context.5, router: r5)
-        r5.state.surface = c05
+        let c0 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
+        let c1 = makeContent(at: \.1, isActive: false, context: context.1, router: router)
+        let c2 = makeContent(at: \.2, isActive: false, context: context.2, router: router)
+        let c3 = makeContent(at: \.3, isActive: false, context: context.3, router: router)
+        let c4 = makeContent(at: \.4, isActive: false, context: context.4, router: router)
+        let c5 = makeContent(at: \.5, isActive: false, context: context.5, router: router)
         return [c0, c1, c2, c3, c4, c5]
     }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        _0.0.updateContent(content[0] as! T0.Content, with: context.0)
+        _0.1.updateContent(content[1] as! T1.Content, with: context.1)
+        _0.2.updateContent(content[2] as! T2.Content, with: context.2)
+        _0.3.updateContent(content[3] as! T3.Content, with: context.3)
+        _0.4.updateContent(content[4] as! T4.Content, with: context.4)
+        _0.5.updateContent(content[5] as! T5.Content, with: context.5)
+    }
 }
-public struct SevenArr<T0, T1, T2, T3, T4, T5, T6>: ScreenBuilder, _ScreenBuilder
+public struct SevenController<T0, T1, T2, T3, T4, T5, T6>: SevenScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen, T6: Screen,
 T0.Content: Controller, T1.Content: Controller, T2.Content: Controller, T3.Content: Controller, T4.Content: Controller, T5.Content: Controller, T6.Content: Controller
 {
     public typealias PathFrom = (T0, T1, T2, T3, T4, T5, T6)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context, T6.Context)
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        case \PathFrom.5: return 5
-        case \PathFrom.6: return 6
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        case 5: return \.5
-        case 6: return \.6
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4, T5, T6)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
-        let r0 = router.next(from: _0.0, path: \.0, isActive: true)
-        let (c0, c00) = _0.0.makeContent(context.0, router: r0)
-        r0.state.surface = c00
-        let r1 = router.next(from: _0.1, path: \.1, isActive: false)
-        let (c1, c01) = _0.1.makeContent(context.1, router: r1)
-        r1.state.surface = c01
-        let r2 = router.next(from: _0.2, path: \.2, isActive: false)
-        let (c2, c02) = _0.2.makeContent(context.2, router: r2)
-        r2.state.surface = c02
-        let r3 = router.next(from: _0.3, path: \.3, isActive: false)
-        let (c3, c03) = _0.3.makeContent(context.3, router: r3)
-        r3.state.surface = c03
-        let r4 = router.next(from: _0.4, path: \.4, isActive: false)
-        let (c4, c04) = _0.4.makeContent(context.4, router: r4)
-        r4.state.surface = c04
-        let r5 = router.next(from: _0.5, path: \.5, isActive: false)
-        let (c5, c05) = _0.5.makeContent(context.5, router: r5)
-        r5.state.surface = c05
-        let r6 = router.next(from: _0.6, path: \.6, isActive: false)
-        let (c6, c06) = _0.6.makeContent(context.6, router: r6)
-        r6.state.surface = c06
+        let c0 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
+        let c1 = makeContent(at: \.1, isActive: false, context: context.1, router: router)
+        let c2 = makeContent(at: \.2, isActive: false, context: context.2, router: router)
+        let c3 = makeContent(at: \.3, isActive: false, context: context.3, router: router)
+        let c4 = makeContent(at: \.4, isActive: false, context: context.4, router: router)
+        let c5 = makeContent(at: \.5, isActive: false, context: context.5, router: router)
+        let c6 = makeContent(at: \.6, isActive: false, context: context.6, router: router)
         return [c0, c1, c2, c3, c4, c5, c6]
     }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        _0.0.updateContent(content[0] as! T0.Content, with: context.0)
+        _0.1.updateContent(content[1] as! T1.Content, with: context.1)
+        _0.2.updateContent(content[2] as! T2.Content, with: context.2)
+        _0.3.updateContent(content[3] as! T3.Content, with: context.3)
+        _0.4.updateContent(content[4] as! T4.Content, with: context.4)
+        _0.5.updateContent(content[5] as! T5.Content, with: context.5)
+        _0.6.updateContent(content[6] as! T6.Content, with: context.6)
+    }
 }
-public struct EightArr<T0, T1, T2, T3, T4, T5, T6, T7>: ScreenBuilder, _ScreenBuilder
+public struct EightController<T0, T1, T2, T3, T4, T5, T6, T7>: EightScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen, T6: Screen, T7: Screen,
 T0.Content: Controller, T1.Content: Controller, T2.Content: Controller, T3.Content: Controller, T4.Content: Controller, T5.Content: Controller, T6.Content: Controller, T7.Content: Controller
 {
     public typealias PathFrom = (T0, T1, T2, T3, T4, T5, T6, T7)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context, T6.Context, T7.Context)
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        case \PathFrom.5: return 5
-        case \PathFrom.6: return 6
-        case \PathFrom.7: return 7
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        case 5: return \.5
-        case 6: return \.6
-        case 7: return \.7
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4, T5, T6, T7)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
-        let r0 = router.next(from: _0.0, path: \.0, isActive: true)
-        let (c0, c00) = _0.0.makeContent(context.0, router: r0)
-        r0.state.surface = c00
-        let r1 = router.next(from: _0.1, path: \.1, isActive: false)
-        let (c1, c01) = _0.1.makeContent(context.1, router: r1)
-        r1.state.surface = c01
-        let r2 = router.next(from: _0.2, path: \.2, isActive: false)
-        let (c2, c02) = _0.2.makeContent(context.2, router: r2)
-        r2.state.surface = c02
-        let r3 = router.next(from: _0.3, path: \.3, isActive: false)
-        let (c3, c03) = _0.3.makeContent(context.3, router: r3)
-        r3.state.surface = c03
-        let r4 = router.next(from: _0.4, path: \.4, isActive: false)
-        let (c4, c04) = _0.4.makeContent(context.4, router: r4)
-        r4.state.surface = c04
-        let r5 = router.next(from: _0.5, path: \.5, isActive: false)
-        let (c5, c05) = _0.5.makeContent(context.5, router: r5)
-        r5.state.surface = c05
-        let r6 = router.next(from: _0.6, path: \.6, isActive: false)
-        let (c6, c06) = _0.6.makeContent(context.6, router: r6)
-        r6.state.surface = c06
-        let r7 = router.next(from: _0.7, path: \.7, isActive: false)
-        let (c7, c07) = _0.7.makeContent(context.7, router: r7)
-        r7.state.surface = c07
+        let c0 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
+        let c1 = makeContent(at: \.1, isActive: false, context: context.1, router: router)
+        let c2 = makeContent(at: \.2, isActive: false, context: context.2, router: router)
+        let c3 = makeContent(at: \.3, isActive: false, context: context.3, router: router)
+        let c4 = makeContent(at: \.4, isActive: false, context: context.4, router: router)
+        let c5 = makeContent(at: \.5, isActive: false, context: context.5, router: router)
+        let c6 = makeContent(at: \.6, isActive: false, context: context.6, router: router)
+        let c7 = makeContent(at: \.7, isActive: false, context: context.7, router: router)
         return [c0, c1, c2, c3, c4, c5, c6, c7]
     }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        _0.0.updateContent(content[0] as! T0.Content, with: context.0)
+        _0.1.updateContent(content[1] as! T1.Content, with: context.1)
+        _0.2.updateContent(content[2] as! T2.Content, with: context.2)
+        _0.3.updateContent(content[3] as! T3.Content, with: context.3)
+        _0.4.updateContent(content[4] as! T4.Content, with: context.4)
+        _0.5.updateContent(content[5] as! T5.Content, with: context.5)
+        _0.6.updateContent(content[6] as! T6.Content, with: context.6)
+        _0.7.updateContent(content[7] as! T7.Content, with: context.7)
+    }
 }
-public struct NineArr<T0, T1, T2, T3, T4, T5, T6, T7, T9>: ScreenBuilder, _ScreenBuilder
-where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen, T6: Screen, T7: Screen, T9: Screen,
-T0.Content: Controller, T1.Content: Controller, T2.Content: Controller, T3.Content: Controller, T4.Content: Controller, T5.Content: Controller, T6.Content: Controller, T7.Content: Controller, T9.Content: Controller
+public struct NineController<T0, T1, T2, T3, T4, T5, T6, T7, T8>: NineScreenBuilder, _ScreenBuilder
+where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen, T6: Screen, T7: Screen, T8: Screen,
+T0.Content: Controller, T1.Content: Controller, T2.Content: Controller, T3.Content: Controller, T4.Content: Controller, T5.Content: Controller, T6.Content: Controller, T7.Content: Controller, T8.Content: Controller
 {
-    public typealias PathFrom = (T0, T1, T2, T3, T4, T5, T6, T7, T9)
-    public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context, T6.Context, T7.Context, T9.Context)
+    public typealias PathFrom = (T0, T1, T2, T3, T4, T5, T6, T7, T8)
+    public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context, T6.Context, T7.Context, T8.Context)
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        case \PathFrom.5: return 5
-        case \PathFrom.6: return 6
-        case \PathFrom.7: return 7
-        case \PathFrom.8: return 8
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        case 5: return \.5
-        case 6: return \.6
-        case 7: return \.7
-        case 8: return \.8
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4, T5, T6, T7, T8)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
-        let r0 = router.next(from: _0.0, path: \.0, isActive: true)
-        let (c0, c00) = _0.0.makeContent(context.0, router: r0)
-        r0.state.surface = c00
-        let r1 = router.next(from: _0.1, path: \.1, isActive: false)
-        let (c1, c01) = _0.1.makeContent(context.1, router: r1)
-        r1.state.surface = c01
-        let r2 = router.next(from: _0.2, path: \.2, isActive: false)
-        let (c2, c02) = _0.2.makeContent(context.2, router: r2)
-        r2.state.surface = c02
-        let r3 = router.next(from: _0.3, path: \.3, isActive: false)
-        let (c3, c03) = _0.3.makeContent(context.3, router: r3)
-        r3.state.surface = c03
-        let r4 = router.next(from: _0.4, path: \.4, isActive: false)
-        let (c4, c04) = _0.4.makeContent(context.4, router: r4)
-        r4.state.surface = c04
-        let r5 = router.next(from: _0.5, path: \.5, isActive: false)
-        let (c5, c05) = _0.5.makeContent(context.5, router: r5)
-        r5.state.surface = c05
-        let r6 = router.next(from: _0.6, path: \.6, isActive: false)
-        let (c6, c06) = _0.6.makeContent(context.6, router: r6)
-        r6.state.surface = c06
-        let r7 = router.next(from: _0.7, path: \.7, isActive: false)
-        let (c7, c07) = _0.7.makeContent(context.7, router: r7)
-        r7.state.surface = c07
-        let r8 = router.next(from: _0.8, path: \.8, isActive: false)
-        let (c8, c08) = _0.8.makeContent(context.8, router: r8)
-        r8.state.surface = c08
+        let c0 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
+        let c1 = makeContent(at: \.1, isActive: false, context: context.1, router: router)
+        let c2 = makeContent(at: \.2, isActive: false, context: context.2, router: router)
+        let c3 = makeContent(at: \.3, isActive: false, context: context.3, router: router)
+        let c4 = makeContent(at: \.4, isActive: false, context: context.4, router: router)
+        let c5 = makeContent(at: \.5, isActive: false, context: context.5, router: router)
+        let c6 = makeContent(at: \.6, isActive: false, context: context.6, router: router)
+        let c7 = makeContent(at: \.7, isActive: false, context: context.7, router: router)
+        let c8 = makeContent(at: \.8, isActive: false, context: context.8, router: router)
         return [c0, c1, c2, c3, c4, c5, c6, c7, c8]
+    }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        _0.0.updateContent(content[0] as! T0.Content, with: context.0)
+        _0.1.updateContent(content[1] as! T1.Content, with: context.1)
+        _0.2.updateContent(content[2] as! T2.Content, with: context.2)
+        _0.3.updateContent(content[3] as! T3.Content, with: context.3)
+        _0.4.updateContent(content[4] as! T4.Content, with: context.4)
+        _0.5.updateContent(content[5] as! T5.Content, with: context.5)
+        _0.6.updateContent(content[6] as! T6.Content, with: context.6)
+        _0.7.updateContent(content[7] as! T7.Content, with: context.7)
+        _0.8.updateContent(content[8] as! T8.Content, with: context.8)
     }
 }
 
 extension ContentBuilder {
+    public static func buildBlock<C0>(_ c0: C0) -> OneController<C0> {
+        OneController(_0: c0)
+    }
+
     public static func buildBlock<T0, T1>(
     _ c0: T0, _ c1: T1
-    ) -> TwoArr<T0, T1> {
-        TwoArr(_0: (c0, c1))
+    ) -> TwoController<T0, T1> {
+        TwoController(_0: (c0, c1))
     }
     public static func buildBlock<T0, T1, T2>(
     _ c0: T0, _ c1: T1, _ c2: T2
-    ) -> ThreeArr<T0, T1, T2> {
-        ThreeArr(_0: (c0, c1, c2))
+    ) -> ThreeController<T0, T1, T2> {
+        ThreeController(_0: (c0, c1, c2))
     }
     public static func buildBlock<T0, T1, T2, T3>(
     _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3
-    ) -> FourArr<T0, T1, T2, T3> {
-        FourArr(_0: (c0, c1, c2, c3))
+    ) -> FourController<T0, T1, T2, T3> {
+        FourController(_0: (c0, c1, c2, c3))
     }
     public static func buildBlock<T0, T1, T2, T3, T4>(
     _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3, _ c4: T4
-    ) -> FiveArr<T0, T1, T2, T3, T4> {
-        FiveArr(_0: (c0, c1, c2, c3, c4))
+    ) -> FiveController<T0, T1, T2, T3, T4> {
+        FiveController(_0: (c0, c1, c2, c3, c4))
     }
     public static func buildBlock<T0, T1, T2, T3, T4, T5>(
     _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3, _ c4: T4, _ c5: T5
-    ) -> SixArr<T0, T1, T2, T3, T4, T5> {
-        SixArr(_0: (c0, c1, c2, c3, c4, c5))
+    ) -> SixController<T0, T1, T2, T3, T4, T5> {
+        SixController(_0: (c0, c1, c2, c3, c4, c5))
     }
     public static func buildBlock<T0, T1, T2, T3, T4, T5, T6>(
     _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3, _ c4: T4, _ c5: T5, _ c6: T6
-    ) -> SevenArr<T0, T1, T2, T3, T4, T5, T6> {
-        SevenArr(_0: (c0, c1, c2, c3, c4, c5, c6))
+    ) -> SevenController<T0, T1, T2, T3, T4, T5, T6> {
+        SevenController(_0: (c0, c1, c2, c3, c4, c5, c6))
     }
     public static func buildBlock<T0, T1, T2, T3, T4, T5, T6, T7>(
     _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3, _ c4: T4, _ c5: T5, _ c6: T6, _ c7: T7
-    ) -> EightArr<T0, T1, T2, T3, T4, T5, T6, T7> {
-        EightArr(_0: (c0, c1, c2, c3, c4, c5, c6, c7))
+    ) -> EightController<T0, T1, T2, T3, T4, T5, T6, T7> {
+        EightController(_0: (c0, c1, c2, c3, c4, c5, c6, c7))
     }
-    public static func buildBlock<T0, T1, T2, T3, T4, T5, T6, T7, T9>(
-    _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3, _ c4: T4, _ c5: T5, _ c6: T6, _ c7: T7, _ c8: T9
-    ) -> NineArr<T0, T1, T2, T3, T4, T5, T6, T7, T9> {
-        NineArr(_0: (c0, c1, c2, c3, c4, c5, c6, c7, c8))
+    public static func buildBlock<T0, T1, T2, T3, T4, T5, T6, T7, T8>(
+    _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3, _ c4: T4, _ c5: T5, _ c6: T6, _ c7: T7, _ c8: T8
+    ) -> NineController<T0, T1, T2, T3, T4, T5, T6, T7, T8> {
+        NineController(_0: (c0, c1, c2, c3, c4, c5, c6, c7, c8))
     }
 }
-
 #endif
 
 #if canImport(SwiftUI) && canImport(Combine)
 import SwiftUI
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct TwoView<T0, T1>: ScreenBuilder, _ScreenBuilder
+public struct TwoView<T0, T1>: TwoScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen,
 T0.Content: View, T1.Content: View
 {
     public typealias PathFrom = (T0, T1)
     public typealias Context = (T0.Context, T1.Context)
     public typealias Content = (AnyView, AnyView)
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
-        let (c0, _) = _0.0.makeContent(context.0, router: router.next(from: _0.0, path: \.0, isActive: true))
-        let (c1, _) = _0.1.makeContent(context.1, router: router.next(from: _0.1, path: \.1, isActive: false))
+    where From: ContentScreen, PathFrom == From.PathFrom {
+        let (c0, _) = _0.0.makeContent(context.0, router: router.next(path: \.0, isActive: true))
+        let (c1, _) = _0.1.makeContent(context.1, router: router.next(path: \.1, isActive: false))
         return (AnyView(c0.tag(0)), AnyView(c1.tag(1)))
     }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ThreeView<T0, T1, T2>: ScreenBuilder, _ScreenBuilder
+public struct ThreeView<T0, T1, T2>: ThreeScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen,
 T0.Content: View, T1.Content: View, T2.Content: View
 {
     public typealias PathFrom = (T0, T1, T2)
     public typealias Context = (T0.Context, T1.Context, T2.Context)
     public typealias Content = (AnyView, AnyView, AnyView)
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
-        let (c0, _) = _0.0.makeContent(context.0, router: router.next(from: _0.0, path: \.0, isActive: true))
-        let (c1, _) = _0.1.makeContent(context.1, router: router.next(from: _0.1, path: \.1, isActive: false))
-        let (c2, _) = _0.2.makeContent(context.2, router: router.next(from: _0.2, path: \.2, isActive: false))
+    where From: ContentScreen, PathFrom == From.PathFrom {
+        let (c0, _) = _0.0.makeContent(context.0, router: router.next(path: \.0, isActive: true))
+        let (c1, _) = _0.1.makeContent(context.1, router: router.next(path: \.1, isActive: false))
+        let (c2, _) = _0.2.makeContent(context.2, router: router.next(path: \.2, isActive: false))
         return (AnyView(c0.tag(0)), AnyView(c1.tag(1)), AnyView(c2.tag(2)))
     }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct FourView<T0, T1, T2, T3>: ScreenBuilder, _ScreenBuilder
+public struct FourView<T0, T1, T2, T3>: FourScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen,
 T0.Content: View, T1.Content: View, T2.Content: View, T3.Content: View
 {
     public typealias PathFrom = (T0, T1, T2, T3)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context)
     public typealias Content = (AnyView, AnyView, AnyView, AnyView)
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
-        let (c0, _) = _0.0.makeContent(context.0, router: router.next(from: _0.0, path: \.0, isActive: true))
-        let (c1, _) = _0.1.makeContent(context.1, router: router.next(from: _0.1, path: \.1, isActive: false))
-        let (c2, _) = _0.2.makeContent(context.2, router: router.next(from: _0.2, path: \.2, isActive: false))
-        let (c3, _) = _0.3.makeContent(context.3, router: router.next(from: _0.3, path: \.3, isActive: false))
+    where From: ContentScreen, PathFrom == From.PathFrom {
+        let (c0, _) = _0.0.makeContent(context.0, router: router.next(path: \.0, isActive: true))
+        let (c1, _) = _0.1.makeContent(context.1, router: router.next(path: \.1, isActive: false))
+        let (c2, _) = _0.2.makeContent(context.2, router: router.next(path: \.2, isActive: false))
+        let (c3, _) = _0.3.makeContent(context.3, router: router.next(path: \.3, isActive: false))
         return (AnyView(c0.tag(0)), AnyView(c1.tag(1)), AnyView(c2.tag(2)), AnyView(c3.tag(3)))
     }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct FiveView<T0, T1, T2, T3, T4>: ScreenBuilder, _ScreenBuilder
+public struct FiveView<T0, T1, T2, T3, T4>: FiveScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen,
 T0.Content: View, T1.Content: View, T2.Content: View, T3.Content: View, T4.Content: View
 {
     public typealias PathFrom = (T0, T1, T2, T3, T4)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context)
     public typealias Content = (AnyView, AnyView, AnyView, AnyView, AnyView)
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
-        let (c0, _) = _0.0.makeContent(context.0, router: router.next(from: _0.0, path: \.0, isActive: true))
-        let (c1, _) = _0.1.makeContent(context.1, router: router.next(from: _0.1, path: \.1, isActive: false))
-        let (c2, _) = _0.2.makeContent(context.2, router: router.next(from: _0.2, path: \.2, isActive: false))
-        let (c3, _) = _0.3.makeContent(context.3, router: router.next(from: _0.3, path: \.3, isActive: false))
-        let (c4, _) = _0.4.makeContent(context.4, router: router.next(from: _0.4, path: \.4, isActive: false))
+    where From: ContentScreen, PathFrom == From.PathFrom {
+        let (c0, _) = _0.0.makeContent(context.0, router: router.next(path: \.0, isActive: true))
+        let (c1, _) = _0.1.makeContent(context.1, router: router.next(path: \.1, isActive: false))
+        let (c2, _) = _0.2.makeContent(context.2, router: router.next(path: \.2, isActive: false))
+        let (c3, _) = _0.3.makeContent(context.3, router: router.next(path: \.3, isActive: false))
+        let (c4, _) = _0.4.makeContent(context.4, router: router.next(path: \.4, isActive: false))
         return (AnyView(c0.tag(0)), AnyView(c1.tag(1)), AnyView(c2.tag(2)), AnyView(c3.tag(3)), AnyView(c4.tag(4)))
     }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct SixView<T0, T1, T2, T3, T4, T5>: ScreenBuilder, _ScreenBuilder
+public struct SixView<T0, T1, T2, T3, T4, T5>: SixScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen,
 T0.Content: View, T1.Content: View, T2.Content: View, T3.Content: View, T4.Content: View, T5.Content: View
 {
     public typealias PathFrom = (T0, T1, T2, T3, T4, T5)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context)
     public typealias Content = (AnyView, AnyView, AnyView, AnyView, AnyView, AnyView)
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        case \PathFrom.5: return 5
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        case 5: return \.5
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4, T5)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
-        let (c0, _) = _0.0.makeContent(context.0, router: router.next(from: _0.0, path: \.0, isActive: true))
-        let (c1, _) = _0.1.makeContent(context.1, router: router.next(from: _0.1, path: \.1, isActive: false))
-        let (c2, _) = _0.2.makeContent(context.2, router: router.next(from: _0.2, path: \.2, isActive: false))
-        let (c3, _) = _0.3.makeContent(context.3, router: router.next(from: _0.3, path: \.3, isActive: false))
-        let (c4, _) = _0.4.makeContent(context.4, router: router.next(from: _0.4, path: \.4, isActive: false))
-        let (c5, _) = _0.5.makeContent(context.5, router: router.next(from: _0.5, path: \.5, isActive: false))
+    where From: ContentScreen, PathFrom == From.PathFrom {
+        let (c0, _) = _0.0.makeContent(context.0, router: router.next(path: \.0, isActive: true))
+        let (c1, _) = _0.1.makeContent(context.1, router: router.next(path: \.1, isActive: false))
+        let (c2, _) = _0.2.makeContent(context.2, router: router.next(path: \.2, isActive: false))
+        let (c3, _) = _0.3.makeContent(context.3, router: router.next(path: \.3, isActive: false))
+        let (c4, _) = _0.4.makeContent(context.4, router: router.next(path: \.4, isActive: false))
+        let (c5, _) = _0.5.makeContent(context.5, router: router.next(path: \.5, isActive: false))
         return (AnyView(c0.tag(0)), AnyView(c1.tag(1)), AnyView(c2.tag(2)), AnyView(c3.tag(3)), AnyView(c4.tag(4)), AnyView(c5.tag(5)))
     }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct SevenView<T0, T1, T2, T3, T4, T5, T6>: ScreenBuilder, _ScreenBuilder
+public struct SevenView<T0, T1, T2, T3, T4, T5, T6>: SevenScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen, T6: Screen,
 T0.Content: View, T1.Content: View, T2.Content: View, T3.Content: View, T4.Content: View, T5.Content: View, T6.Content: View
 {
     public typealias PathFrom = (T0, T1, T2, T3, T4, T5, T6)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context, T6.Context)
     public typealias Content = (AnyView, AnyView, AnyView, AnyView, AnyView, AnyView, AnyView)
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        case \PathFrom.5: return 5
-        case \PathFrom.6: return 6
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        case 5: return \.5
-        case 6: return \.6
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4, T5, T6)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
-        let (c0, _) = _0.0.makeContent(context.0, router: router.next(from: _0.0, path: \.0, isActive: true))
-        let (c1, _) = _0.1.makeContent(context.1, router: router.next(from: _0.1, path: \.1, isActive: false))
-        let (c2, _) = _0.2.makeContent(context.2, router: router.next(from: _0.2, path: \.2, isActive: false))
-        let (c3, _) = _0.3.makeContent(context.3, router: router.next(from: _0.3, path: \.3, isActive: false))
-        let (c4, _) = _0.4.makeContent(context.4, router: router.next(from: _0.4, path: \.4, isActive: false))
-        let (c5, _) = _0.5.makeContent(context.5, router: router.next(from: _0.5, path: \.5, isActive: false))
-        let (c6, _) = _0.6.makeContent(context.6, router: router.next(from: _0.6, path: \.6, isActive: false))
+    where From: ContentScreen, PathFrom == From.PathFrom {
+        let (c0, _) = _0.0.makeContent(context.0, router: router.next(path: \.0, isActive: true))
+        let (c1, _) = _0.1.makeContent(context.1, router: router.next(path: \.1, isActive: false))
+        let (c2, _) = _0.2.makeContent(context.2, router: router.next(path: \.2, isActive: false))
+        let (c3, _) = _0.3.makeContent(context.3, router: router.next(path: \.3, isActive: false))
+        let (c4, _) = _0.4.makeContent(context.4, router: router.next(path: \.4, isActive: false))
+        let (c5, _) = _0.5.makeContent(context.5, router: router.next(path: \.5, isActive: false))
+        let (c6, _) = _0.6.makeContent(context.6, router: router.next(path: \.6, isActive: false))
         return (AnyView(c0.tag(0)), AnyView(c1.tag(1)), AnyView(c2.tag(2)), AnyView(c3.tag(3)), AnyView(c4.tag(4)), AnyView(c5.tag(5)), AnyView(c6.tag(6)))
     }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct EightView<T0, T1, T2, T3, T4, T5, T6, T7>: ScreenBuilder, _ScreenBuilder
+public struct EightView<T0, T1, T2, T3, T4, T5, T6, T7>: EightScreenBuilder, _ScreenBuilder
 where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen, T6: Screen, T7: Screen,
 T0.Content: View, T1.Content: View, T2.Content: View, T3.Content: View, T4.Content: View, T5.Content: View, T6.Content: View, T7.Content: View
 {
     public typealias PathFrom = (T0, T1, T2, T3, T4, T5, T6, T7)
     public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context, T6.Context, T7.Context)
     public typealias Content = (AnyView, AnyView, AnyView, AnyView, AnyView, AnyView, AnyView, AnyView)
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        case \PathFrom.5: return 5
-        case \PathFrom.6: return 6
-        case \PathFrom.7: return 7
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        case 5: return \.5
-        case 6: return \.6
-        case 7: return \.7
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4, T5, T6, T7)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
-        let (c0, _) = _0.0.makeContent(context.0, router: router.next(from: _0.0, path: \.0, isActive: true))
-        let (c1, _) = _0.1.makeContent(context.1, router: router.next(from: _0.1, path: \.1, isActive: false))
-        let (c2, _) = _0.2.makeContent(context.2, router: router.next(from: _0.2, path: \.2, isActive: false))
-        let (c3, _) = _0.3.makeContent(context.3, router: router.next(from: _0.3, path: \.3, isActive: false))
-        let (c4, _) = _0.4.makeContent(context.4, router: router.next(from: _0.4, path: \.4, isActive: false))
-        let (c5, _) = _0.5.makeContent(context.5, router: router.next(from: _0.5, path: \.5, isActive: false))
-        let (c6, _) = _0.6.makeContent(context.6, router: router.next(from: _0.6, path: \.6, isActive: false))
-        let (c7, _) = _0.7.makeContent(context.7, router: router.next(from: _0.7, path: \.7, isActive: false))
+    where From: ContentScreen, PathFrom == From.PathFrom {
+        let (c0, _) = _0.0.makeContent(context.0, router: router.next(path: \.0, isActive: true))
+        let (c1, _) = _0.1.makeContent(context.1, router: router.next(path: \.1, isActive: false))
+        let (c2, _) = _0.2.makeContent(context.2, router: router.next(path: \.2, isActive: false))
+        let (c3, _) = _0.3.makeContent(context.3, router: router.next(path: \.3, isActive: false))
+        let (c4, _) = _0.4.makeContent(context.4, router: router.next(path: \.4, isActive: false))
+        let (c5, _) = _0.5.makeContent(context.5, router: router.next(path: \.5, isActive: false))
+        let (c6, _) = _0.6.makeContent(context.6, router: router.next(path: \.6, isActive: false))
+        let (c7, _) = _0.7.makeContent(context.7, router: router.next(path: \.7, isActive: false))
         return (AnyView(c0.tag(0)), AnyView(c1.tag(1)), AnyView(c2.tag(2)), AnyView(c3.tag(3)), AnyView(c4.tag(4)), AnyView(c5.tag(5)), AnyView(c6.tag(6)), AnyView(c7.tag(7)))
     }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct NineView<T0, T1, T2, T3, T4, T5, T6, T7, T9>: ScreenBuilder, _ScreenBuilder
-where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen, T6: Screen, T7: Screen, T9: Screen,
-T0.Content: View, T1.Content: View, T2.Content: View, T3.Content: View, T4.Content: View, T5.Content: View, T6.Content: View, T7.Content: View, T9.Content: View
+public struct NineView<T0, T1, T2, T3, T4, T5, T6, T7, T8>: NineScreenBuilder, _ScreenBuilder
+where T0: Screen, T1: Screen, T2: Screen, T3: Screen, T4: Screen, T5: Screen, T6: Screen, T7: Screen, T8: Screen,
+T0.Content: View, T1.Content: View, T2.Content: View, T3.Content: View, T4.Content: View, T5.Content: View, T6.Content: View, T7.Content: View, T8.Content: View
 {
-    public typealias PathFrom = (T0, T1, T2, T3, T4, T5, T6, T7, T9)
-    public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context, T6.Context, T7.Context, T9.Context)
+    public typealias PathFrom = (T0, T1, T2, T3, T4, T5, T6, T7, T8)
+    public typealias Context = (T0.Context, T1.Context, T2.Context, T3.Context, T4.Context, T5.Context, T6.Context, T7.Context, T8.Context)
     public typealias Content = (AnyView, AnyView, AnyView, AnyView, AnyView, AnyView, AnyView, AnyView, AnyView)
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        case \PathFrom.0: return 0
-        case \PathFrom.1: return 1
-        case \PathFrom.2: return 2
-        case \PathFrom.3: return 3
-        case \PathFrom.4: return 4
-        case \PathFrom.5: return 5
-        case \PathFrom.6: return 6
-        case \PathFrom.7: return 7
-        case \PathFrom.8: return 8
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        case 0: return \.0
-        case 1: return \.1
-        case 2: return \.2
-        case 3: return \.3
-        case 4: return \.4
-        case 5: return \.5
-        case 6: return \.6
-        case 7: return \.7
-        case 8: return \.8
-        default: return \.0
-        }
-    }
+    let _0: (T0, T1, T2, T3, T4, T5, T6, T7, T8)
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
-        let (c0, _) = _0.0.makeContent(context.0, router: router.next(from: _0.0, path: \.0, isActive: true))
-        let (c1, _) = _0.1.makeContent(context.1, router: router.next(from: _0.1, path: \.1, isActive: false))
-        let (c2, _) = _0.2.makeContent(context.2, router: router.next(from: _0.2, path: \.2, isActive: false))
-        let (c3, _) = _0.3.makeContent(context.3, router: router.next(from: _0.3, path: \.3, isActive: false))
-        let (c4, _) = _0.4.makeContent(context.4, router: router.next(from: _0.4, path: \.4, isActive: false))
-        let (c5, _) = _0.5.makeContent(context.5, router: router.next(from: _0.5, path: \.5, isActive: false))
-        let (c6, _) = _0.6.makeContent(context.6, router: router.next(from: _0.6, path: \.6, isActive: false))
-        let (c7, _) = _0.7.makeContent(context.7, router: router.next(from: _0.7, path: \.7, isActive: false))
-        let (c8, _) = _0.8.makeContent(context.8, router: router.next(from: _0.8, path: \.8, isActive: false))
+    where From: ContentScreen, PathFrom == From.PathFrom {
+        let (c0, _) = _0.0.makeContent(context.0, router: router.next(path: \.0, isActive: true))
+        let (c1, _) = _0.1.makeContent(context.1, router: router.next(path: \.1, isActive: false))
+        let (c2, _) = _0.2.makeContent(context.2, router: router.next(path: \.2, isActive: false))
+        let (c3, _) = _0.3.makeContent(context.3, router: router.next(path: \.3, isActive: false))
+        let (c4, _) = _0.4.makeContent(context.4, router: router.next(path: \.4, isActive: false))
+        let (c5, _) = _0.5.makeContent(context.5, router: router.next(path: \.5, isActive: false))
+        let (c6, _) = _0.6.makeContent(context.6, router: router.next(path: \.6, isActive: false))
+        let (c7, _) = _0.7.makeContent(context.7, router: router.next(path: \.7, isActive: false))
+        let (c8, _) = _0.8.makeContent(context.8, router: router.next(path: \.8, isActive: false))
         return (AnyView(c0.tag(0)), AnyView(c1.tag(1)), AnyView(c2.tag(2)), AnyView(c3.tag(3)), AnyView(c4.tag(4)), AnyView(c5.tag(5)), AnyView(c6.tag(6)), AnyView(c7.tag(7)), AnyView(c8.tag(8)))
     }
 }
@@ -847,9 +751,9 @@ extension ContentBuilder {
         EightView(_0: (c0, c1, c2, c3, c4, c5, c6, c7))
     }
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-    public static func buildBlock<T0, T1, T2, T3, T4, T5, T6, T7, T9>(
-    _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3, _ c4: T4, _ c5: T5, _ c6: T6, _ c7: T7, _ c8: T9
-    ) -> NineView<T0, T1, T2, T3, T4, T5, T6, T7, T9> {
+    public static func buildBlock<T0, T1, T2, T3, T4, T5, T6, T7, T8>(
+    _ c0: T0, _ c1: T1, _ c2: T2, _ c3: T3, _ c4: T4, _ c5: T5, _ c6: T6, _ c7: T7, _ c8: T8
+    ) -> NineView<T0, T1, T2, T3, T4, T5, T6, T7, T8> {
         NineView(_0: (c0, c1, c2, c3, c4, c5, c6, c7, c8))
     }
 }

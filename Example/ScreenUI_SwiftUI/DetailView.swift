@@ -15,7 +15,6 @@ struct DetailView: View {
     var body: some View {
         VStack {
             Text(context)
-                .navigationBarTitle(state[next: \.title])
             if let view = state.move(
                 \.nextScreen,
                 context: "Subdetail text!!1",
@@ -37,11 +36,12 @@ struct DetailView: View {
                 )
             }
         }
+        .navigationTitle(state[next: \.title])
     }
 }
 
 struct DetailView_Preview: PreviewProvider {
     static var previews: some View {
-        DetailView(state: .root(from: DetailScreen(nextScreen: nil)), context: "Detail text")
+        DetailView(state: .root(from: DetailScreen(nextScreen: nil)), context: "Detail text example")
     }
 }

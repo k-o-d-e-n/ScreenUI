@@ -1,16 +1,18 @@
 PODS:
-  - ScreenUI (1.0.0)
+  - ScreenUI/Beta (1.0.2):
+    - ScreenUI/Release
+  - ScreenUI/Release (1.0.2)
 
 DEPENDENCIES:
-  - ScreenUI (from `../`)
+  - ScreenUI/Beta (from `../`)
 
 EXTERNAL SOURCES:
   ScreenUI:
     :path: "../"
 
 SPEC CHECKSUMS:
-  ScreenUI: 38201c09f53224e2dbdd9e85d69ee57695726510
+  ScreenUI: 8b6ce6db989b793f749e3a127bddddfba359cd0d
 
-PODFILE CHECKSUM: f6e38b3d9be4309324a2f241c91cd113df43e12a
+PODFILE CHECKSUM: a97962a4a1f6cb611beb01d0bdea960bd6501db2
 
 COCOAPODS: 1.10.1

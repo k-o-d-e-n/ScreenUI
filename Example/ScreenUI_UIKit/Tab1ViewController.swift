@@ -10,14 +10,16 @@ import UIKit
 
 final class Tab1ViewController: UIViewController {
     let state: Screens.Router<Tab1>
+    weak var detailLabel: UILabel?
+    var context: Tab1.Context { didSet { detailLabel?.text = context.text } }
 
-    init(state: Screens.Router<Tab1>) {
+    init(state: Screens.Router<Tab1>, context: Tab1.Context) {
         self.state = state
+        self.context = context
         super.init(nibName: nil, bundle: nil)
 
         let title = state[next: \.title]
         self.title = title
-        self.tabBarItem.title = title
         self.navigationItem.title = title
     }
 
@@ -31,8 +33,9 @@ final class Tab1ViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Detail", style: .done, target: self, action: #selector(openDetail))
 
         let detailLabel = UILabel()
+        self.detailLabel = detailLabel
         detailLabel.translatesAutoresizingMaskIntoConstraints = false
-        detailLabel.text = "Tab #1"
+        detailLabel.text = context.text ?? "Tab #1"
         view.addSubview(detailLabel)
         NSLayoutConstraint.activate([
             detailLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),

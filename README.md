@@ -203,27 +203,27 @@ public struct Navigation<Root>: ScreenContainer where Root: Screen, Root.Content
 Any transition must implement the protocol below:
 
 ```swift
-public typealias TransitionResult<To> = (state: ScreenState<To.NestedScreen>, screenContent: To.NestedScreen.Content) where To: Screen
+public typealias TransitionResult<From, To> = (state: TransitionState<From, To>, screenContent: To.NestedScreen.Content) where From: Screen, To: Screen
 public protocol Transition: PathProvider where PathFrom == To.PathFrom {
     associatedtype From: Screen
     associatedtype To: Screen
     associatedtype Context
 
-    func move(from screen: From.Content, state: ScreenState<From.NestedScreen>, with context: Context, completion: (() -> Void)?) -> TransitionResult<To>
+    func move(from screen: From.Content, state: ScreenState<From.NestedScreen>, with context: Context, completion: (() -> Void)?) -> TransitionResult<From, To>
 }
 ```
 
 Transitions between the content screens must implement `ScreenTransition` protocol. Every such transition should provide a back behavior by assign `ScreenState.back` property.
 
 ```swift
-public struct Present<From, Too>: ScreenTransition {
+public struct Present<From, To>: ScreenTransition {
     /// ...
-    public func move(from content: From.Content, state: ScreenState<From.NestedScreen>, with context: Too.Context, completion: (() -> Void)?) -> TransitionResult<To> {
-        let nextState = ScreenState<To>()
+    public func move(from content: From.Content, state: ScreenState<From.NestedScreen>, with context: Too.Context, completion: (() -> Void)?) -> TransitionResult<From, To> {
+        let nextState = TransitionState<From, To>()
         nextState.back = .some(Dismiss(animated: animated))
         let (content1, content0) = to.makeContent(context, router: Router(from: to, state: nextState))
         surface.present(content1, animated: animated, completion: completion)
-        return (nextState, content0)
+        return (nextState, (content1, content0))
     }
 }
 ```
@@ -243,7 +243,7 @@ So, when you will building [screen tree](#real-world-example), you can set up in
 ```swift
 ///    [Initial screen]         [Conditional screen]      [Tab screen]     [Some next screen in scenario]    [Run chain from root screen content]
 ///       /                             |                       |            /                                  /
-router[root: .init(root: <%context%>][case: \.2, <%context%>][select: \.1][move: \.nextScreen, <%context%>].move(from: (), completion: nil)
+router[root: <%context%>][case: \.2, <%context%>][select: \.1][move: \.nextScreen, <%context%>].move(from: (), completion: nil)
 ```
 
 ### Content builders
@@ -301,33 +301,33 @@ Apply one of them and you can write crossplatform code where:
 ### SwiftUI
 
 **Supported screens:**
-- `Window` :white_check_mark:
-- `Navigation` :white_check_mark:
-- `Tabs` :white_check_mark:
+- :white_check_mark: `Window`
+- :white_check_mark: `Navigation`
+- :white_check_mark: `Tabs`
 
 **Supported transitions:**
-- `Push`/`Pop` :white_check_mark:
-- `Present` :white_check_mark:
+- :white_check_mark: `Push`/`Pop`
+- :white_check_mark: `Present`/`Dismiss`
 
 ### UIKit
 
 **Supported screens:**
-- `Window` :white_check_mark:
-- `Navigation` :white_check_mark:
-- `Tabs` :white_check_mark:
+- :white_check_mark: `Window`
+- :white_check_mark: `Navigation`
+- :white_check_mark: `Tabs`
 
 **Supported transitions:**
-- `Push`/`Pop` :white_check_mark:
-- `Present` :white_check_mark:
+- :white_check_mark: `Push`/`Pop`
+- :white_check_mark: `Present`/`Dismiss`
 
 ### AppKit
 
 **Supported screens:**
-- `Window` :white_check_mark:
-- `Tabs` :white_check_mark:
+- :white_check_mark: `Window`
+- :white_check_mark: `Tabs`
 
 **Supported transitions:**
-- `Present` :white_check_mark:
+- :white_check_mark: `Present`/`Dismiss`
 
 ## Installation
 

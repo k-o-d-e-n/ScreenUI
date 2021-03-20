@@ -10,69 +10,112 @@ import Foundation
 import SwiftUI
 #endif
 
-public class __ContentScreenState: _ContentScreenState {
-    weak var next: _ContentScreenState?
-    var previous: _ContentScreenState?
+public class AnyScreenState {
+    var keyPath: AnyKeyPath?
+    weak var next: AnyScreenState?
+    fileprivate weak var _weakPrevious: AnyScreenState?
+    fileprivate var _strongPrevious: AnyScreenState?
+    var previous: AnyScreenState? {
+        set { _strongPrevious = newValue }
+        get { _weakPrevious ?? _strongPrevious }
+    }
+    var content: Any? { nil }
+    #if SCREENUI_BETA
+    public var _isActive: Bool {
+        set {
+            guard let prev = previous, prev.next == nil || prev.next !== self else { return }
+            if newValue {
+                prev.next = self
+            } else {
+                prev.next = nil
+            }
+        }
+        get { previous?.next === self }
+    }
+    #endif
 
-    func corresponds<To>(_ context: Any, of type: To.Type) -> TransitionResult<To>? where To : Screen { nil }
     func back(completion: (() -> Void)?) {}
 }
 
-protocol _ContentScreenState: AnyObject {
-    /// strong
-    var previous: _ContentScreenState? { get set }
-    /// weak
-    var next: _ContentScreenState? { get set }
+public class TransitionState<From, To>: ScreenState<To> where From: Screen, To: Screen {
+    override var content: Any? {
+        guard let surface = surface, let wrapper = surfaceWrapper else { return nil }
+        return ContentResult<To>(wrapper, surface)
+    }
 
-    func corresponds<To>(_ context: Any, of type: To.Type) -> TransitionResult<To>? where To : Screen
-    func back(completion: (() -> Void)?)
+    override var previous: AnyScreenState? {
+        willSet {
+            assert(newValue.map { $0 as? ContentScreenState<From.NestedScreen> != nil } ?? true, "Invalid type of the previous state")
+        }
+    }
+    var previousState: ContentScreenState<From.NestedScreen>? {
+        set { previous = newValue }
+        get { previous.map { $0 as! ContentScreenState<From.NestedScreen> } }
+    }
+
+    override func back(completion: (() -> Void)?) {
+        guard back == nil && isActive_SwiftUI == nil else {
+            return super.back(completion: completion)
+        }
+        guard
+            let prev = previousState,
+            (keyPath as? PartialKeyPath<From.PathFrom>).flatMap({ prev.childStates[$0] }) === self
+        else { return }
+        prev.back(completion: completion)
+    }
 }
 
-/// -----------
-
-protocol NextScreenState: _ContentScreenState {
-    func back(completion: (() -> Void)?)
-}
-
-public class ScreenState<S>: __ContentScreenState, NextScreenState where S: ContentScreen {
-    /// private var evaluator: AnyStateEvaluator<P.Content>?
-    private weak var _weakSurface: AnyObject?
-    private var _strongSurface: S.Content?
-    var surface: S.Content? {
+@propertyWrapper struct Surface<T> {
+    private weak var _weakValue: AnyObject?
+    private var _strongValue: T?
+    var wrappedValue: T? {
         set {
-            if S.Content.self is AnyClass {
-                _weakSurface = newValue as AnyObject
+            if T.self is AnyClass {
+                _weakValue = newValue as AnyObject
             } else {
-                _strongSurface = newValue
+                /// _strongValue = newValue
             }
         }
-        get {
-            _strongSurface ?? (_weakSurface as? S.Content)
-        }
+        get { _strongValue ?? _weakValue.map { $0 as! T } }
     }
-    override var next: _ContentScreenState? {
-        didSet {
-            next?.previous = self
-        }
-    }
-    /// var isActive: Bool { false }
+}
+public class ScreenState<S>: ContentScreenState<S.NestedScreen> where S: Screen {
+    @Surface var surfaceWrapper: S.Content?
+    override var content: Any? { surfaceWrapper }
+}
+public class ContentScreenState<S>: AnyScreenState where S: ContentScreen {
+    @Surface var surface: S.Content?
+    override var content: Any? { surface }
     #if canImport(SwiftUI)
     var isActive_SwiftUI: _Binding<Bool>?
     var selectedIndex_SwiftUI: _Binding<Int>?
     #endif
-    var childStates: [PartialKeyPath<S.PathFrom>: __ContentScreenState] = [:]
+    private(set) var childStates: [PartialKeyPath<S.PathFrom>: AnyScreenState] = [:]
 
-    public override init() {
-        /// self.point = point
+    public override init() {}
+    deinit {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("SCREENUI_DEBUGLOG_ON") {
+            print("Deinitialized state \(self)")
+        }
+        #endif
     }
 
-    public subscript<Screen>(child path: PartialKeyPath<S.PathFrom>, _ : Screen.Type) -> ScreenState<Screen>? {
-        return childStates[path] as? ScreenState<Screen>
+    public subscript<To>(child path: PartialKeyPath<S.PathFrom>, _ : To.Type) -> TransitionState<S, To>? {
+        set {
+            if let value = newValue {
+                value._strongPrevious = nil
+                value._weakPrevious = self
+            }
+            childStates[path] = newValue
+        }
+        get { childStates[path] as? TransitionState<S, To> }
     }
-
-    override func corresponds<To>(_ context: Any, of type: To.Type) -> TransitionResult<To>? where To : Screen {
-        (surface as? To.NestedScreen.Content).flatMap({ s in (self as? ScreenState<To.NestedScreen>).map({ ($0, s) }) })
+    #if SCREENUI_BETA
+    public subscript(child path: PartialKeyPath<S.PathFrom>) -> AnyScreenState? {
+        childStates[path]
     }
+    #endif
 
     public var back: AnyBackTransition<S>?
 
@@ -86,8 +129,8 @@ public class ScreenState<S>: __ContentScreenState, NextScreenState where S: Cont
             return
         }
         #endif
-        guard let s = surface else { return }
-        back?.move(from: s, completion: completion)
+        guard let back = back, let s = surface else { return }
+        back.move(from: s, completion: completion)
     }
 }
 @propertyWrapper struct _Binding<T> {
@@ -101,3 +144,27 @@ extension Router {
         state.back(completion: completion)
     }
 }
+
+/// -----------
+
+#if SCREENUI_BETA
+final class _ProxyState<T>: ContentScreenState<T> where T: ContentScreen {
+    let proxy: AnyScreenState
+    init(proxy: AnyScreenState) {
+        self.proxy = proxy
+    }
+    override var previous: AnyScreenState? {
+        set { proxy.previous = newValue }
+        get { proxy.previous }
+    }
+    override var next: AnyScreenState? {
+        set { proxy.next = newValue }
+        get { proxy.next }
+    }
+}
+extension Router {
+    public func _proxied<Root>(by root: Root) -> Router<Root.NestedScreen> where Root: Screen {
+        Router<Root.NestedScreen>(from: root, state: _ProxyState(proxy: state))
+    }
+}
+#endif

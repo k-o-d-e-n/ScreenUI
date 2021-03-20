@@ -26,8 +26,7 @@ struct Tab1View: View {
                 completion: nil
             )
         }
-        .tabItem { Text(state[next: \.title]) }
-        .navigationBarTitle(state[next: \.title])
+        .navigationTitle(state[next: \.title])
     }
 }
 

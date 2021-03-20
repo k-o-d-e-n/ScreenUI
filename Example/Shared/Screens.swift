@@ -40,45 +40,39 @@ extension Screens {
     typealias Push = Present
     #endif
 
-    #if SWIFTUI
-    static var tab1: MapContent<Navigation<Tab1>, AnyView> {
-        Navigation(Tab1(nextScreen: AnyTransition(Push(DetailScreen(nextScreen: AnyTransition(Present(DetailScreen(nextScreen: nil))))))))
-            .mapContent({ ctn, _, tab -> AnyView in
-                AnyView(ctn.tabItem { Text(tab[next: \.title]) })
-            })
-    }
-    static var tab2: MapContent<Navigation<Tab2>, AnyView> {
-        Navigation(Tab2(nextScreen: AnyTransition(Present(Navigation(PresentedScreen())))))
-            .mapContent({ ctn, _, tab -> AnyView in
-                AnyView(ctn.tabItem { Text(tab[next: \.title]) })
-            })
-    }
-    #else
-    static var tab1: Navigation<Tab1> {
-        Navigation(Tab1(nextScreen: AnyTransition(Push(DetailScreen(nextScreen: AnyTransition(Present(Navigation(DetailScreen(nextScreen: nil)))))))))
-    }
-    static var tab2: Navigation<Tab2> {
-        Navigation(Tab2(nextScreen: AnyTransition(Present(Navigation(PresentedScreen())))))
-    }
-    #endif
-
     static let transitionsMap = Window(
         Tabs {
-            tab1
-            tab2
+            Navigation(Tab1(nextScreen: AnyTransition(Push(DetailScreen(nextScreen: AnyTransition(Present(Navigation(DetailScreen(nextScreen: nil)))))))))
+                .tabItem()
+            Navigation(Tab2(nextScreen: AnyTransition(Present(Navigation(PresentedScreen())))))
+                .tabItem()
         }
     )
 }
 
-struct Tab1: ContentScreen {
+struct Tab1: ContentScreen, ScreenAppearance {
     let title: String = "Tab1"
+    var tabImage: Image? { if #available(iOS 13.0, *) { return Image(systemName: "person") } else { return nil } }
     let nextScreen: ScreenUI.AnyScreenTransition<Self, DetailScreen>
 
     func makeContent(_ context: Context, router: Router<NestedScreen>) -> ContentResult<Tab1> {
+        #if UIKIT
+        let vc = Content(state: router, context: context)
+        #else
         let vc = Content(state: router)
+        #endif
         return (vc, vc)
     }
-    struct Context: Equatable {}
+    func updateContent(_ content: Content, with context: Context) {
+        #if UIKIT
+        content.context = context
+        #endif
+    }
+    struct Context: Equatable {
+        let text: String?
+        init() { self.text = nil }
+        init(text: String) { self.text = text }
+    }
     typealias NestedScreen = Self
     #if SWIFTUI
         typealias Content = Tab1View
@@ -86,8 +80,9 @@ struct Tab1: ContentScreen {
         typealias Content = Tab1ViewController
     #endif
 }
-struct Tab2: ContentScreen {
+struct Tab2: ContentScreen, ScreenAppearance {
     let title: String = "Tab2"
+    var tabImage: Image? { if #available(iOS 13.0, *) { return Image(systemName: "gamecontroller") } else { return nil } }
     let nextScreen: ScreenUI.AnyScreenTransition<Self, PresentedScreen>
 
     func makeContent(_ context: Context, router: Router<NestedScreen>) -> ContentResult<Tab2> {
@@ -102,15 +97,19 @@ struct Tab2: ContentScreen {
         typealias Content = Tab2ViewController
     #endif
 }
-struct DetailScreen: ContentScreen {
+struct DetailScreen: ContentScreen, ScreenAppearance {
     let title: String = "Detail screen"
-    /// var back: AnyBackTransition<BackSurface>?
 
     let nextScreen: ScreenUI.AnyScreenTransition<Self, DetailScreen>?
 
     func makeContent(_ context: Context, router: Router<NestedScreen>) -> ContentResult<DetailScreen> {
         let vc = Content(state: router, context: context)
         return (vc, vc)
+    }
+    func updateContent(_ content: Content, with context: Context) {
+        #if UIKIT
+        content.text = context
+        #endif
     }
     typealias Context = String
     typealias NestedScreen = Self
@@ -121,13 +120,17 @@ struct DetailScreen: ContentScreen {
     #endif
 }
 
-struct PresentedScreen: ContentScreen {
+struct PresentedScreen: ContentScreen, ScreenAppearance {
     let title: String = "Presented screen"
-    /// var back: AnyBackTransition<BackSurface>?
 
     func makeContent(_ context: Context, router: Router<NestedScreen>) -> ContentResult<PresentedScreen> {
         let vc = Content(state: router, context: context)
         return (vc, vc)
+    }
+    func updateContent(_ content: Content, with context: Context) {
+        #if !SWIFTUI
+        content.context = context
+        #endif
     }
     typealias Context = Color
     typealias NestedScreen = Self

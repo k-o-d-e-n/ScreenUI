@@ -21,8 +21,7 @@ struct PresentedView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(context)
-        .tabItem { Text(state[next: \.title]) }
-        .navigationBarTitle(state[next: \.title])
+        .navigationTitle(state[next: \.title])
     }
 }
 

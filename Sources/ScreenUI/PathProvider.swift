@@ -23,8 +23,8 @@ public protocol PathProvider {
     func keyPath(at index: Int) -> PartialKeyPath<PathFrom>
 }
 extension PathProvider {
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int { fatalError("unimplemented") }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> { fatalError("unimplemented") }
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int { fatalError("unimplemented in \(type(of: self))") }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> { fatalError("unimplemented in \(type(of: self))") }
 }
 extension PathProvider where PathFrom == Self {
     public subscript<T>(next path: KeyPath<Self, T>) -> T { self[keyPath: path] }

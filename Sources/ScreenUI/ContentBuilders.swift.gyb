@@ -1,6 +1,6 @@
 %{
 type_names = {2:'Two', 3:'Three', 4:'Four', 5:'Five', 6:'Six', 7:'Seven', 8:'Eight', 9:'Nine'}
-elements = ['T0', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T9']
+elements = ['T0', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8']
 }%
 
 ///
@@ -11,14 +11,14 @@ public struct One<S>: ScreenBuilder where S: Screen {
     public typealias Content = S.Content
     public typealias Context = S.Context
     public let _0: S
-    public subscript<T>(next path: KeyPath<Self, T>) -> T {
-        self[keyPath: path]
-    }
     public func index(of keyPath: PartialKeyPath<Self>) -> Int { 0 }
     public func keyPath(at index: Int) -> PartialKeyPath<Self> { \._0 }
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content where From: Screen, From.PathFrom == Self {
-        let (c1, _) = _0.makeContent(context, router: router.next(from: _0, isActive: true))
+        let (c1, _) = _0.makeContent(context, router: router.next(path: \._0, isActive: true))
         return c1
+    }
+    public func updateContent(_ content: S.Content, with context: S.Context) {
+        _0.updateContent(content, with: context)
     }
 }
 extension ContentBuilder {
@@ -27,90 +27,103 @@ extension ContentBuilder {
     }
 }
 
-#if os(macOS) || os(iOS) || os(tvOS)
-
 % for count in type_names:
-public struct ${type_names[count]}Arr<${', '.join(elements[:count])}>: ScreenBuilder, _ScreenBuilder
+public protocol ${type_names[count]}ScreenBuilder: ScreenBuilder
+where PathFrom == (${', '.join(elements[:count])}) {
+    % for i in range(0, count):
+    associatedtype T${i}: Screen
+    % end
+}
+extension ${type_names[count]}ScreenBuilder {
+    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
+        switch keyPath {
+        % for i in range(0, count):
+        case \PathFrom.${i}: return ${i}
+        % end
+        default: return 0
+        }
+    }
+    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
+        switch index {
+        % for i in range(0, count):
+        case ${i}: return \.${i}
+        % end
+        default: return \.0
+        }
+    }
+}
+% end
+
+#if os(macOS) || os(iOS) || os(tvOS)
+public struct OneController<S>: ScreenBuilder where S: Screen, S.Content: Controller {
+    public typealias Content = [Controller]
+    public typealias Context = S.Context
+    let _0: S
+    public func index(of keyPath: PartialKeyPath<Self>) -> Int { 0 }
+    public func keyPath(at index: Int) -> PartialKeyPath<Self> { \._0 }
+    public func makeContent<From>(_ context: S.Context, router: Router<From>) -> [Controller] where From : ContentScreen, Self.PathFrom == From.PathFrom {
+        [makeContent(at: \._0, isActive: true, context: context, router: router)]
+    }
+    public func updateContent(_ content: [Controller], with context: S.Context) {
+        _0.updateContent(content[0] as! S.Content, with: context)
+    }
+}
+% for count in type_names:
+public struct ${type_names[count]}Controller<${', '.join(elements[:count])}>: ${type_names[count]}ScreenBuilder, _ScreenBuilder
 where ${', '.join(map(lambda x: x + ': Screen', elements[:count]))},
 ${', '.join(map(lambda x: x + '.Content: Controller', elements[:count]))}
 {
     public typealias PathFrom = (${', '.join(elements[:count])})
     public typealias Context = (${', '.join(map(lambda x: x + '.Context', elements[:count]))})
     public typealias Content = [Controller]
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        % for i in range(0, count):
-        case \PathFrom.${i}: return ${i}
-        % end
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        % for i in range(0, count):
-        case ${i}: return \.${i}
-        % end
-        default: return \.0
-        }
-    }
+    let _0: (${', '.join(elements[:count])})
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
     where PathFrom == From.PathFrom, From : ContentScreen {
         % for i in range(0, count):
-        let r${i} = router.next(from: _0.${i}, path: \.${i}, isActive: ${'true' if i == 0 else 'false'})
-        let (c${i}, c0${i}) = _0.${i}.makeContent(context.${i}, router: r${i})
-        r${i}.state.surface = c0${i}
+        let c${i} = makeContent(at: \.${i}, isActive: ${'true' if i == 0 else 'false'}, context: context.${i}, router: router)
         % end
         return [${', '.join(map(lambda x: 'c' + str(x), range(0, count)))}]
+    }
+    public func updateContent(_ content: [Controller], with context: Context) {
+        % for i in range(0, count):
+        _0.${i}.updateContent(content[${i}] as! ${elements[i]}.Content, with: context.${i})
+        % end
     }
 }
 % end
 
 extension ContentBuilder {
+    public static func buildBlock<C0>(_ c0: C0) -> OneController<C0> {
+        OneController(_0: c0)
+    }
+
     % for count in type_names:
     public static func buildBlock<${', '.join(elements[:count])}>(
     ${', '.join(map(lambda x, y: '_ c' + str(x) + ': ' + y, range(0, count), elements[:count]))}
-    ) -> ${type_names[count]}Arr<${', '.join(elements[:count])}> {
-        ${type_names[count]}Arr(_0: (${', '.join(map(lambda x: 'c' + str(x), range(0, count)))}))
+    ) -> ${type_names[count]}Controller<${', '.join(elements[:count])}> {
+        ${type_names[count]}Controller(_0: (${', '.join(map(lambda x: 'c' + str(x), range(0, count)))}))
     }
     % end
 }
-
 #endif
 
-#if canImport(SwiftUI)
+#if canImport(SwiftUI) && canImport(Combine)
 import SwiftUI
 
 % for count in type_names:
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ${type_names[count]}View<${', '.join(elements[:count])}>: ScreenBuilder, _ScreenBuilder
+public struct ${type_names[count]}View<${', '.join(elements[:count])}>: ${type_names[count]}ScreenBuilder, _ScreenBuilder
 where ${', '.join(map(lambda x: x + ': Screen', elements[:count]))},
 ${', '.join(map(lambda x: x + '.Content: View', elements[:count]))}
 {
     public typealias PathFrom = (${', '.join(elements[:count])})
     public typealias Context = (${', '.join(map(lambda x: x + '.Context', elements[:count]))})
     public typealias Content = (${', '.join(['AnyView'] * count)})
-    let _0: PathFrom
-    public func index(of keyPath: PartialKeyPath<PathFrom>) -> Int {
-        switch keyPath {
-        % for i in range(0, count):
-        case \PathFrom.${i}: return ${i}
-        % end
-        default: return 0
-        }
-    }
-    public func keyPath(at index: Int) -> PartialKeyPath<PathFrom> {
-        switch index {
-        % for i in range(0, count):
-        case ${i}: return \.${i}
-        % end
-        default: return \.0
-        }
-    }
+    let _0: (${', '.join(elements[:count])})
     public func makeContent<From>(_ context: Context, router: Router<From>) -> Content
-    where PathFrom == From.PathFrom, From : ContentScreen {
+    where From: ContentScreen, PathFrom == From.PathFrom {
         % for i in range(0, count):
-        let (c${i}, _) = _0.${i}.makeContent(context.${i}, router: router.next(from: _0.${i}, path: \.${i}, isActive: ${'true' if i == 0 else 'false'}))
+        let (c${i}, _) = _0.${i}.makeContent(context.${i}, router: router.next(path: \.${i}, isActive: ${'true' if i == 0 else 'false'}))
         % end
         return (${', '.join(map(lambda x: 'AnyView(c' + str(x) + '.tag(' + str(x) + '))', range(0, count)))})
     }

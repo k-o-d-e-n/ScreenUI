@@ -16,13 +16,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, WindowStorage {
     lazy var screens = AppScreen(Application(delegate: self, root: Screens.transitionsMap))
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        screens.router[root: .init(root: (tab1: .init(), tab2: .init()))][select: \.0][move: \.nextScreen, "DETAIL"].move(from: (), completion: nil)
-
-        /*AppDelegate.router[move: \.nextScreen, "TEST!!!"].move(from: content, completion: nil)
-
+        screens.router[root: .init(root: (tab1: .init(), tab2: .init()))][select: \.1][move: \.nextScreen, .red].move(from: (), completion: nil)
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-            AppDelegate.router[move: \.nextScreen, "TEST!!!"][move: \.nextScreen, "TEST SECOND!!!"]?.move(from: content, completion: nil)
-        }*/
+            self.screens.router[root: .init(root: (tab1: .init(text: "UPDATED TEXT"), tab2: .init()))][select: \.1][move: \.nextScreen, .brown].move(from: (), completion: nil)
+        }
         return true
     }
 

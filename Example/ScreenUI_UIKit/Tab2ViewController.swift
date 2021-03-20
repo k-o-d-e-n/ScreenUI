@@ -17,7 +17,6 @@ final class Tab2ViewController: UIViewController {
 
         let title = state[next: \.title]
         self.title = title
-        self.tabBarItem.title = title
         self.navigationItem.title = title
     }
 
