@@ -1,6 +1,6 @@
 # 📲 ScreenUI
 
-A multi-platform, multi-paradigm routing framework for iOS/macOS and others, the replacement of Storyboard.
+A multi-platform, multi-paradigm declarative routing framework for iOS/macOS and others, the replacement of Storyboard.
 
 Supports `UIKit`, `AppKit`, `SwiftUI`.
 
@@ -84,6 +84,7 @@ Supports `UIKit`, `AppKit`, `SwiftUI`.
   + [SwiftUI](#swiftui)
   + [UIKit](#uikit)
   + [AppKit](#appkit)
++ [**Best practices**](#best-practices)
 + [**Installation**](#installation)
 
 ## Main features
@@ -97,6 +98,8 @@ Supports `UIKit`, `AppKit`, `SwiftUI`.
 + Fully strong-typed code
 
 With `ScreenUI` you will forget about such methods, like `func pushViewController(_:)`,  `func present(_:)`, about implementations are based on enums and reducers.
+
+The best achievement of this framework is a combination of strictness (strong types, declarative style, transitions isolation) and flexibility (configurability of screens for each scenario, interchangeability of transitions, optional transitions).
 
 ## Quick course
 
@@ -156,7 +159,44 @@ All you need in the next step is to build a [screen tree](#real-world-example) a
 transitionsMap.router[root: .default][case: \.0, ()].move(from: (), completion: nil)
 ```
 
-> Due to the specific interface of **SwiftUI** some things have small changes in API. 
+> Due to the specific interface of **SwiftUI** some things have small changes in API.
+
+<details>
+<summary><b>SwiftUI example</b></summary>
+
+```swift
+struct DetailView: View {
+    let router: Router<DetailScreen>
+    let context: String
+
+    var body: some View {
+        VStack {
+            Text(context)
+            /// optional transition
+            if let view = router.move(
+                \.nextScreen,
+                context: "Subdetail text!!1",
+                action: { opened in
+                    Button(
+                        action: { opened.wrappedValue = true },
+                        label: { Text("Next") }
+                    )
+                },
+                completion: nil
+            ) {
+                view
+            }
+            Button(
+                action: { router.back() },
+                label: { Text("Back") }
+            )
+        }
+        .navigationTitle(router[next: \.title])
+    }
+}
+```
+
+</details>
 
 ## Deep dive
 
@@ -241,10 +281,12 @@ So, when you will building [screen tree](#real-world-example), you can set up in
 `Router` provides a subscript interface to build the path to the screen using  *Swift Key-path expressions*:
 
 ```swift
-///    [Initial screen]         [Conditional screen]      [Tab screen]     [Some next screen in scenario]    [Run chain from root screen content]
-///       /                             |                       |            /                                  /
+///  [Initial screen]    [Conditional screen]    [Tab screen]    [Some next screen in scenario]    [Run chain from root screen content]
+///       /                 /                       |             /                                  /
 router[root: <%context%>][case: \.2, <%context%>][select: \.1][move: \.nextScreen, <%context%>].move(from: (), completion: nil)
 ```
+
+You can omit the context value if you sure that screen is presented in hierarchy.
 
 ### Content builders
 
@@ -259,10 +301,10 @@ public protocol ScreenBuilder: PathProvider {
 }
 ```
 
-And of course for such instances is necessary Swift's function builder:
+And of course for such instances is necessary Swift's result builder:
 
 ```swift
-@_functionBuilder
+@resultBuilder
 public struct ContentBuilder {}
 ```
 
@@ -329,10 +371,66 @@ Apply one of them and you can write crossplatform code where:
 **Supported transitions:**
 - :white_check_mark: `Present`/`Dismiss`
 
+## Best Practices
+
+<details>
+    <summary><b>Screen appearance</b></summary>
+    You can define a protocol that will describe a screen appearance. So, you will create a single source of truth.
+    
+```swift
+protocol ScreenAppearance {
+    var title: String { get }
+    var tabImage: Image? { get }
+    ...
+}
+extension ScreenAppearance {
+    var tabImage: Image? { nil }
+    ...
+}
+extension ScreenAppearance where Self: ContentScreen {
+    func applyAppearance(_ content: Content) {
+        /// configure content
+    }
+}
+protocol ScreenContent {
+    associatedtype Route: Screen
+    var router: Router<Route> { get }
+}
+extension ScreenContent where Route.PathFrom: ScreenAppearance {
+    func prepareAppearance() {
+        router[next: \.self].applyAppearance(self)
+    }
+}
+```
+    
+</details>
+
+<details>
+    <summary><b>Universal transitions</b></summary>
+    There is screens that should available everywhere. So, you can extend `ContentScreen` protocol.  
+    
+```swift
+struct Alert: ContentScreen {
+    /// alert screen implementation
+}
+extension ContentScreen {
+    var alert: Present<Self, Alert> { get }
+}
+
+/// now you can show alert from any screen
+router.move(\.alert, from: self, with: "Hello world")
+```
+    
+</details>
+
 ## Installation
 
 ```ruby
 pod 'ScreenUI'
+```
+
+```swift
+.package(url: "https://github.com/k-o-d-e-n/ScreenUI", from: "1.1.0")
 ```
 
 ## Author
