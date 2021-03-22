@@ -9,7 +9,7 @@ let package = Package(
     ],
     dependencies: [],
     targets: [
-        .target(name: "ScreenUI", dependencies: []),
+        .target(name: "ScreenUI", dependencies: [], exclude: ["ContentBuilders.swift.gyb"]),
         .testTarget(name: "ScreenUITests", dependencies: ["ScreenUI"])
     ]
 )
