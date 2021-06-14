@@ -343,9 +343,19 @@ extension Router where From.NestedScreen.Content: UITabBarController {
         let transition = Tab.UIKitTransition<From.NestedScreen, T>(index: index(of: path), path: path, to: screen)
         return StartPath<Tab.UIKitTransition<From.NestedScreen, T>>(keyPath: path, transition: transition, context: .strong(()), state: state)
     }
+    public func select<T>(_ path: KeyPath<PathFrom, T>) -> StartPath<Tab.UIKitTransition<From.NestedScreen, T>> where T: UnwrappedScreen {
+        let screen = self[next: path]
+        let transition = Tab.UIKitTransition<From.NestedScreen, T>(index: index(of: path), path: path, to: screen)
+        return StartPath<Tab.UIKitTransition<From.NestedScreen, T>>(keyPath: path, transition: transition, context: .strong(()), state: state)
+    }
 }
 extension ScreenPath where To.NestedScreen.Content: UITabBarController {
     public subscript<T>(select path: KeyPath<PathFrom, T>) -> NextPath<Self, Tab.UIKitTransition<To.NestedScreen, T>> where T: UnwrappedScreen {
+        let screen = self[next: path]
+        let transition = Tab.UIKitTransition<To.NestedScreen, T>(index: index(of: path), path: path, to: screen)
+        return NextPath<Self, Tab.UIKitTransition<To.NestedScreen, T>>(keyPath: path, prev: self, transition: transition, context: .strong(()), state: (self as! ScreenPathPrivate)._state?.next as? ContentScreenState<To.NestedScreen>)
+    }
+    public func select<T>(_ path: KeyPath<PathFrom, T>) -> NextPath<Self, Tab.UIKitTransition<To.NestedScreen, T>> where T: UnwrappedScreen {
         let screen = self[next: path]
         let transition = Tab.UIKitTransition<To.NestedScreen, T>(index: index(of: path), path: path, to: screen)
         return NextPath<Self, Tab.UIKitTransition<To.NestedScreen, T>>(keyPath: path, prev: self, transition: transition, context: .strong(()), state: (self as! ScreenPathPrivate)._state?.next as? ContentScreenState<To.NestedScreen>)

@@ -149,7 +149,7 @@ extension Screen where NestedScreen == Self {
     }
 }
 /// where ContentScreen == Self
-public protocol ContentScreen: Screen, UnwrappedScreen {}
+public protocol ContentScreen: UnwrappedScreen {}
 public protocol ScreenContainer: Screen {}
 
 extension Screen where Content == Self, NestedScreen == Self {
@@ -243,6 +243,14 @@ extension RootRouter {
         let transition = RootTransition<From>(to: from[next: \.root])
         return StartPath<RootTransition<From>>(keyPath: \From.root, transition: transition, context: .weak, state: state)
     }
+    public func root(_ context: From.Root.Context) -> StartPath<RootTransition<From>> {
+        let transition = RootTransition<From>(to: from[next: \.root])
+        return StartPath<RootTransition<From>>(keyPath: \From.root, transition: transition, context: .strong(context), state: state)
+    }
+    public func root() -> StartPath<RootTransition<From>> {
+        let transition = RootTransition<From>(to: from[next: \.root])
+        return StartPath<RootTransition<From>>(keyPath: \From.root, transition: transition, context: .weak, state: state)
+    }
     #if SCREENUI_BETA
     public subscript<T, U>(_current path: KeyPath<UnavailableContentScreen<U>, T>, context: T.Context) -> StartPath<T> where T: Transition, T.From == UnavailableContentScreen<U> {
         _current(path: path, context: context, state: state)
@@ -250,7 +258,7 @@ extension RootRouter {
     #endif
 }
 
-public struct AppScreen<Root>: RootScreen where Root: Screen {
+public struct InitialScreen<Root>: RootScreen where Root: Screen {
     public typealias Content = Void
     public typealias Context = Root.Context
     public typealias NestedScreen = Self
@@ -449,7 +457,7 @@ public struct ClosedContext<Base>: Screen where Base: Screen {
     public typealias NestedScreen = Base.NestedScreen
     public typealias Content = Base.Content
     public typealias Context = Void
-    fileprivate let base: Base
+    public let base: Base
     fileprivate let context: Base.Context
     public subscript<T>(next path: KeyPath<Base.PathFrom, T>) -> T { base[next: path] }
     public func index(of keyPath: PartialKeyPath<Base.PathFrom>) -> Int { base.index(of: keyPath) }

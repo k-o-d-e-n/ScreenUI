@@ -13,7 +13,7 @@ import ScreenUI
 final class AppDelegate: NSObject, NSApplicationDelegate, WindowStorage {
     var window: NSWindow?
 
-    lazy var screens = AppScreen(Application(delegate: self, root: Screens.transitionsMap))
+    lazy var screens = InitialScreen(Application(delegate: self, root: Screens.transitionsMap))
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         screens.router[root: (.init(), .init())].move(from: (), completion: nil)

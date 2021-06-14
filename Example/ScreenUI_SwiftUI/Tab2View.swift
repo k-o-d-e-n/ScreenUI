@@ -17,12 +17,7 @@ struct Tab2View: View {
             state.move(
                 \.nextScreen,
                 context: .red,
-                action: { (state) in
-                    Button(
-                        action: { state.wrappedValue = true },
-                        label: { Text("Next") }
-                    )
-                },
+                action: Text("Next"),
                 completion: nil
             )
         }

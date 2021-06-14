@@ -13,10 +13,14 @@ import ScreenUI
 final class AppDelegate: UIResponder, UIApplicationDelegate, WindowStorage {
     var window: UIWindow?
 
-    lazy var screens = AppScreen(Application(delegate: self, root: Screens.transitionsMap))
+    lazy var screens = InitialScreen(Application(delegate: self, root: Screens.transitionsMap))
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        screens.router[root: .init(root: (tab1: .init(), tab2: .init()))][select: \.1][move: \.nextScreen, .red].move(from: (), completion: nil)
+        screens.router
+            .root(.init(root: (.init(), .init())))
+            .select(\.1)
+            .move(\.nextScreen, .red)
+            .move(from: (), completion: nil)
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
             self.screens.router[root: .init(root: (tab1: .init(text: "UPDATED TEXT"), tab2: .init()))][select: \.1][move: \.nextScreen, .brown].move(from: (), completion: nil)
         }

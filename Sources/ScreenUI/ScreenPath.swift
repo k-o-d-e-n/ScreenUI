@@ -182,3 +182,14 @@ extension ScreenPath {
         return NextPath<Self, U>(keyPath: path, prev: self, transition: transition, context: .weak, state: (self as! ScreenPathPrivate)._state?.next)
     }
 }
+extension ScreenPath {
+    public func move<U>(_ path: KeyPath<To.PathFrom, U>, _ ctx: U.Context) -> NextPath<Self, U>
+    where U: Transition, U.From == To.NestedScreen {
+        NextPath<Self, U>(keyPath: path, prev: self, transition: self[next: path], context: .strong(ctx), state: (self as! ScreenPathPrivate)._state?.next)
+    }
+    public func move<U>(_ path: KeyPath<To.PathFrom, Optional<U>>, _ ctx: U.Context) -> NextPath<Self, U>?
+    where U: Transition, U.From == To.NestedScreen {
+        guard let transition = self[next: path] else { return nil }
+        return NextPath<Self, U>(keyPath: path, prev: self, transition: transition, context: .strong(ctx), state: (self as! ScreenPathPrivate)._state?.next)
+    }
+}

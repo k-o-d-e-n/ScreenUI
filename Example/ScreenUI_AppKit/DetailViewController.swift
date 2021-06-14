@@ -25,7 +25,7 @@ final class DetailViewController: NSViewController {
     }
 
     override func loadView() {
-        view = NSView()
+        view = NSView(frame: NSRect(x: 0, y: 0, width: 500, height: 500))
     }
 
     override func viewDidLoad() {

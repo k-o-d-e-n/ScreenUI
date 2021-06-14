@@ -7,68 +7,68 @@ Supports `UIKit`, `AppKit`, `SwiftUI`.
 ### Real world example
 
 ```swift
-    static let transitionsMap = AppScreen(
-        Delegate(
-            ConditionalWindow {
-                Launch()
-                Welcome(
-                    login: Present(Navigation(Login())),
-                    registration: Present(Navigation(Registration()))
+static let transitionsMap = AppScreen(
+    Delegate(
+        ConditionalWindow {
+            Launch()
+            Welcome(
+                login: Present(Navigation(Login())),
+                registration: Present(Navigation(Registration()))
+            )
+            Tabs {
+                Navigation(
+                    Feed(
+                        page: Push(Page()),
+                        match: Push(Match()),
+                        gameDay: Push(GameDay(match: Push(Match()))),
+                        tournament: Push(Tournament(match: Push(Match())))
+                    )
                 )
-                Tabs {
-                    Navigation(
-                        Feed(
-                            page: Push(Page()),
-                            match: Push(Match()),
-                            gameDay: Push(GameDay(match: Push(Match()))),
-                            tournament: Push(Tournament(match: Push(Match())))
+                Navigation(
+                    Search(
+                        filter: AnySearchFilter()
+                            .navigation()
+                            .configContent({ $0.isToolbarHidden = false })
+                            .present(),
+                        user: Present(Navigation(Player(team: Push(Team())))),
+                        team: Team(player: Player().push())
+                            .navigation()
+                            .present(),
+                        league: Present(Navigation(League())),
+                        match: Present(Navigation(Match()))
+                    )
+                )
+                Navigation(
+                    Dashboard(
+                        edit: Flow(base: UserEdit(editable: true)).present(),
+                        entities: .init(
+                            user: Push(Player(team: Team().navigation().present())),
+                            team: Push(Team(player: Player().navigation().present())),
+                            league: Push(League(
+                                team: Push(Team()),
+                                tournament: Push(Tournament(match: Push(Match())))
+                            ))
                         )
                     )
-                    Navigation(
-                        Search(
-                            filter: AnySearchFilter()
-                                .navigation()
-                                .configContent({ $0.isToolbarHidden = false })
-                                .present(),
-                            user: Present(Navigation(Player(team: Push(Team())))),
-                            team: Team(player: Player().push())
-                                .navigation()
-                                .present(),
-                            league: Present(Navigation(League())),
-                            match: Present(Navigation(Match()))
+                )
+                Navigation(
+                    Messages(
+                        settings: Present(
+                            Settings(
+                                account: Push(AccountInfo()),
+                                changePassword: Push(ChangePassword())
+                            ).navigation()
                         )
                     )
-                    Navigation(
-                        Dashboard(
-                            edit: Flow(base: UserEdit(editable: true)).present(),
-                            entities: .init(
-                                user: Push(Player(team: Team().navigation().present())),
-                                team: Push(Team(player: Player().navigation().present())),
-                                league: Push(League(
-                                    team: Push(Team()),
-                                    tournament: Push(Tournament(match: Push(Match())))
-                                ))
-                            )
-                        )
-                    )
-                    Navigation(
-                        Messages(
-                            settings: Present(
-                                Settings(
-                                    account: Push(AccountInfo()),
-                                    changePassword: Push(ChangePassword())
-                                ).navigation()
-                            )
-                        )
-                    )
-                }
-                .configContent({ tabbar in
-                    tabbar.prepareViewAppearance()
-                })
-                .with(((), (), (), ()))
+                )
             }
-        )
+            .configContent({ tabbar in
+                tabbar.prepareViewAppearance()
+            })
+            .with(((), (), (), ()))
+        }
     )
+)
 ```
 
 ## Table of contents
@@ -176,20 +176,13 @@ struct DetailView: View {
             if let view = router.move(
                 \.nextScreen,
                 context: "Subdetail text!!1",
-                action: { opened in
-                    Button(
-                        action: { opened.wrappedValue = true },
-                        label: { Text("Next") }
-                    )
-                },
+                action: Text("Next"),
                 completion: nil
             ) {
                 view
             }
-            Button(
-                action: { router.back() },
-                label: { Text("Back") }
-            )
+            /// move back
+            Button("Back") { router.back() }
         }
         .navigationTitle(router[next: \.title])
     }
@@ -284,6 +277,9 @@ So, when you will building [screen tree](#real-world-example), you can set up in
 ///  [Initial screen]    [Conditional screen]    [Tab screen]    [Some next screen in scenario]    [Run chain from root screen content]
 ///       /                 /                       |             /                                  /
 router[root: <%context%>][case: \.2, <%context%>][select: \.1][move: \.nextScreen, <%context%>].move(from: (), completion: nil)
+
+/// or using dot syntax
+router.root(<%context%>).case(<%context%>).select(\.1).move(\.nextScreen, <%context%>).move(from: (), completion: nil)
 ```
 
 You can omit the context value if you sure that screen is presented in hierarchy.

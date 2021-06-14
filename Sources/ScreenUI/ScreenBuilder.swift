@@ -37,28 +37,29 @@ extension ScreenBuilder {
     }
 }
 
-@_functionBuilder
+@resultBuilder
 public struct ContentBuilder {}
 
 
 #if SCREENUI_BETA
 public protocol ScreenItemsBuilder: PathProvider {
     associatedtype ItemContent
-    func makeContent<From>(at index: Int, router: Router<From>) -> ItemContent where From.PathFrom == PathFrom
+    associatedtype Context
+    func makeContent<From>(at index: Int, context: Context, router: Router<From>) -> ItemContent where From.PathFrom == PathFrom
 }
-extension OneController: ScreenItemsBuilder where S.Context == Void {
-    public func makeContent<From>(at index: Int, router: Router<From>) -> S.Content where From : ContentScreen, Self.PathFrom == From.PathFrom {
-        let (c1, _) = _0.makeContent((), router: router.next(path: \._0, isActive: true))
+extension OneController: ScreenItemsBuilder {
+    public func makeContent<From>(at index: Int, context: Context, router: Router<From>) -> S.Content where From : ContentScreen, Self.PathFrom == From.PathFrom {
+        let (c1, _) = _0.makeContent(context, router: router.next(path: \._0, isActive: true))
         return c1
     }
 }
-extension TwoController: ScreenItemsBuilder where T0.Context == Void, T1.Context == Void {
+extension TwoController: ScreenItemsBuilder {
     public typealias ItemContent = Controller
-    public func makeContent<From>(at index: Int, router: Router<From>) -> ItemContent where From : ContentScreen, Self.PathFrom == From.PathFrom {
+    public func makeContent<From>(at index: Int, context: Context, router: Router<From>) -> ItemContent where From : ContentScreen, Self.PathFrom == From.PathFrom {
         let c1: Controller
         switch index {
-        case 1: c1 = makeContent(at: \.1, isActive: true, context: (), router: router)
-        default: c1 = makeContent(at: \.0, isActive: true, context: (), router: router)
+        case 1: c1 = makeContent(at: \.1, isActive: true, context: context.1, router: router)
+        default: c1 = makeContent(at: \.0, isActive: true, context: context.0, router: router)
         }
         return c1
     }

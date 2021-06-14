@@ -124,6 +124,7 @@ extension Presentation {
         public enum Style {
             case modal
             case sheet
+            case popover(NSRect, PartialKeyPath<From.Content>, NSRectEdge, NSPopover.Behavior)
             case custom(NSViewControllerPresentationAnimator)
         }
 
@@ -149,6 +150,8 @@ extension Presentation {
             switch style {
             case .modal: surface.presentAsModalWindow(content1)
             case .sheet: surface.presentAsSheet(content1)
+            case .popover(let rect, let viewPath, let edge, let behavior):
+                surface.present(content1, asPopoverRelativeTo: rect, of: surface[keyPath: viewPath] as! NSView, preferredEdge: edge, behavior: behavior)
             case .custom(let animator): surface.present(content1, animator: animator)
             }
             CATransaction.commit()
@@ -192,12 +195,22 @@ extension Router where From.Content: NSTabViewController {
         let transition = Tab.AppKitTransition<From, T>(index: index(of: path), path: path, to: screen)
         return StartPath<Tab.AppKitTransition<From, T>>(keyPath: path, transition: transition, context: .strong(()), state: state)
     }
-}
-extension ScreenPath where To.Content: NSTabViewController {
-    public subscript<T>(select path: KeyPath<PathFrom, T>) -> NextPath<Self, Tab.AppKitTransition<To, T>> where T: UnwrappedScreen {
+    public func select<T>(_ path: KeyPath<PathFrom, T>) -> StartPath<Tab.AppKitTransition<From, T>> where T: UnwrappedScreen {
         let screen = self[next: path]
-        let transition = Tab.AppKitTransition<To, T>(index: index(of: path), path: path, to: screen)
-        return NextPath<Self, Tab.AppKitTransition<To, T>>(keyPath: path, prev: self, transition: transition, context: .strong(()), state: (self as! ScreenPathPrivate)._state?.next)
+        let transition = Tab.AppKitTransition<From, T>(index: index(of: path), path: path, to: screen)
+        return StartPath<Tab.AppKitTransition<From, T>>(keyPath: path, transition: transition, context: .strong(()), state: state)
+    }
+}
+extension ScreenPath where To.NestedScreen.Content: NSTabViewController {
+    public subscript<T>(select path: KeyPath<PathFrom, T>) -> NextPath<Self, Tab.AppKitTransition<To.NestedScreen, T>> where T: UnwrappedScreen {
+        let screen = self[next: path]
+        let transition = Tab.AppKitTransition<To.NestedScreen, T>(index: index(of: path), path: path, to: screen)
+        return NextPath<Self, Tab.AppKitTransition<To.NestedScreen, T>>(keyPath: path, prev: self, transition: transition, context: .strong(()), state: (self as! ScreenPathPrivate)._state?.next)
+    }
+    public func select<T>(_ path: KeyPath<PathFrom, T>) -> NextPath<Self, Tab.AppKitTransition<To.NestedScreen, T>> where T: UnwrappedScreen {
+        let screen = self[next: path]
+        let transition = Tab.AppKitTransition<To.NestedScreen, T>(index: index(of: path), path: path, to: screen)
+        return NextPath<Self, Tab.AppKitTransition<To.NestedScreen, T>>(keyPath: path, prev: self, transition: transition, context: .strong(()), state: (self as! ScreenPathPrivate)._state?.next)
     }
 }
 #endif

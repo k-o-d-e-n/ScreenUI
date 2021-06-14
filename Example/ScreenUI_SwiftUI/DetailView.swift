@@ -12,28 +12,38 @@ struct DetailView: View {
     let state: Screens.Router<DetailScreen>
     let context: String
 
+    @Environment(\.appRouter) var appRouter: AppRouter
+
     var body: some View {
         VStack {
-            Text(context)
+            Text(context).fontWeight(.heavy).font(.title)
+            Divider().padding()
             if let view = state.move(
                 \.nextScreen,
                 context: "Subdetail text!!1",
-                action: { bool in
-                    Button(
-                        action: {
-                            bool.wrappedValue = true
-                        },
-                        label: { Text("Next") }
-                    )
+                action: { state in
+                    Text("Optional transition").bold()
+                    Button("Open sub-detail") { state.wrappedValue = true }
+                    Text("Open the same screen with other context")
+                        .italic()
+                        .font(.caption)
                 },
                 completion: nil
             ) {
                 view
+                Divider().padding()
+                Text("Open tab2 screen through global router").bold()
+                Button("Tab2") {
+                    appRouter
+                        .select(\.1)
+                        .move(\.nextScreen)
+                        .move(from: (), completion: nil)
+                }
+                Text("Simultaneously opens next screen")
+                    .italic()
+                    .font(.caption)
             } else {
-                Button(
-                    action: { state.back() },
-                    label: { Text("Back") }
-                )
+                Button("Back") { state.back() }
             }
         }
         .navigationTitle(state[next: \.title])

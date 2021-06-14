@@ -214,21 +214,47 @@ extension Screen where Content: View {
 
 extension Router {
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-    public func move<T, ActionView>(_ path: KeyPath<From.PathFrom, T>, context: T.Context, action view: @escaping (Binding<Bool>) -> ActionView, completion: (() -> Void)?)
-    -> some View where T: SwiftUICompatibleTransition, From == T.From, ActionView: View {
+    public func move<T, ActionView>(
+        _ path: KeyPath<From.PathFrom, T>, context: T.Context,
+        @ViewBuilder action view: @escaping (Binding<Bool>) -> ActionView,
+        completion: (() -> Void)?
+    ) -> TransitionView<T, ActionView> where T: SwiftUICompatibleTransition, From == T.From, ActionView: View {
         let nextState = TransitionState<T.From.NestedScreen, T.To.NestedScreen>()
         nextState.previous = state
         state[child: path, T.To.NestedScreen.self] = nextState // replaced previous line
-        return TransitionView<T, ActionView>(from[next: path], prevState: state, nextState: nextState, context: context, actionView: view, completion: completion)
+        return TransitionView<T, ActionView>(
+            from[next: path], prevState: state, nextState: nextState,
+            context: context, actionView: view, completion: completion
+        )
     }
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-    public func move<T, ActionView>(_ path: KeyPath<From.PathFrom, Optional<T>>, context: T.Context, action view: @escaping (Binding<Bool>) -> ActionView, completion: (() -> Void)?)
-    -> TransitionView<T, ActionView>? where T: SwiftUICompatibleTransition, From == T.From, ActionView: View {
+    public func move<T, ActionView>(
+        _ path: KeyPath<From.PathFrom, Optional<T>>, context: T.Context,
+        @ViewBuilder action view: @escaping (Binding<Bool>) -> ActionView,
+        completion: (() -> Void)?
+    ) -> TransitionView<T, ActionView>? where T: SwiftUICompatibleTransition, From == T.From, ActionView: View {
         guard let transition = from[next: path] else { return nil }
         let nextState = TransitionState<T.From.NestedScreen, T.To.NestedScreen>()
         nextState.previous = state
         state[child: path, T.To.NestedScreen.self] = nextState // replaced previous line
-        return TransitionView<T, ActionView>(transition, prevState: state, nextState: nextState, context: context, actionView: view, completion: completion)
+        return TransitionView<T, ActionView>(
+            transition, prevState: state, nextState: nextState,
+            context: context, actionView: view, completion: completion
+        )
+    }
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    public func move<T, ActionLabel>(_ path: KeyPath<From.PathFrom, T>, context: T.Context, action label: ActionLabel, completion: (() -> Void)?)
+    -> TransitionView<T, Button<ActionLabel>> where T: SwiftUICompatibleTransition, From == T.From, ActionLabel: View {
+        move(path, context: context, action: { state in
+            Button(action: { state.wrappedValue = true }, label: { label })
+        }, completion: completion)
+    }
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    public func move<T, ActionLabel>(_ path: KeyPath<From.PathFrom, Optional<T>>, context: T.Context, action label: ActionLabel, completion: (() -> Void)?)
+    -> TransitionView<T, Button<ActionLabel>>? where T: SwiftUICompatibleTransition, From == T.From, ActionLabel: View {
+        move(path, context: context, action: { state in
+            Button(action: { state.wrappedValue = true }, label: { label })
+        }, completion: completion)
     }
 }
 
@@ -384,6 +410,15 @@ extension Router {
         guard let transition = self[next: path] else { return nil }
         return StartPath_SwiftUI<T>(change: .isActive, keyPath: path, transition: transition, state: state)
     }
+//    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+//    public func move<T>(_ path: KeyPath<PathFrom, T>) -> StartPath_SwiftUI<T> where T: SwiftUICompatibleTransition, T.From == From, T.To.Content: View {
+//        StartPath_SwiftUI<T>(change: .isActive, keyPath: path, transition: self[next: path], state: state)
+//    }
+//    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+//    public func move<T>(_ path: KeyPath<PathFrom, Optional<T>>) -> StartPath_SwiftUI<T>? where T: SwiftUICompatibleTransition, T.From == From, T.To.Content: View {
+//        guard let transition = self[next: path] else { return nil }
+//        return StartPath_SwiftUI<T>(change: .isActive, keyPath: path, transition: transition, state: state)
+//    }
 }
 extension ScreenPath {
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -398,6 +433,18 @@ extension ScreenPath {
         guard let transition = self[next: path] else { return nil }
         return NextPath_SwiftUI<Self, U>(change: .isActive, keyPath: path, prev: self, transition: transition, state: (self as! ScreenPathPrivate)._state?.next as? ContentScreenState<U.From.NestedScreen>)
     }
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    public func move<U>(_ path: KeyPath<To.PathFrom, U>) -> NextPath_SwiftUI<Self, U>
+    where U: SwiftUICompatibleTransition, U.To.Content: View {
+        let next = NextPath_SwiftUI<Self, U>(change: .isActive, keyPath: path, prev: self, transition: self[next: path], state: (self as! ScreenPathPrivate)._state?.next as? ContentScreenState<U.From.NestedScreen>)
+        return next
+    }
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    public func move<U>(_ path: KeyPath<To.PathFrom, Optional<U>>) -> NextPath_SwiftUI<Self, U>?
+    where U: SwiftUICompatibleTransition, U.To.Content: View {
+        guard let transition = self[next: path] else { return nil }
+        return NextPath_SwiftUI<Self, U>(change: .isActive, keyPath: path, prev: self, transition: transition, state: (self as! ScreenPathPrivate)._state?.next as? ContentScreenState<U.From.NestedScreen>)
+    }
 }
 
 extension Router where From.Content: _TabsViewIdentity {
@@ -407,10 +454,22 @@ extension Router where From.Content: _TabsViewIdentity {
         let transition = Tab.SwiftUITransition<From, T>(to: screen)
         return StartPath_SwiftUI<Tab.SwiftUITransition<From, T>>(change: .selectedIndex(index(of: path)), keyPath: path, transition: transition, state: state)
     }
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    public func select<T>(_ path: KeyPath<PathFrom, T>) -> StartPath_SwiftUI<Tab.SwiftUITransition<From, T>> {
+        let screen = self[next: path]
+        let transition = Tab.SwiftUITransition<From, T>(to: screen)
+        return StartPath_SwiftUI<Tab.SwiftUITransition<From, T>>(change: .selectedIndex(index(of: path)), keyPath: path, transition: transition, state: state)
+    }
 }
 extension ScreenPath where To.Content: _TabsViewIdentity {
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     public subscript<T>(select path: KeyPath<PathFrom, T>) -> NextPath_SwiftUI<Self, Tab.SwiftUITransition<To, T>> {
+        let screen = self[next: path]
+        let transition = Tab.SwiftUITransition<To, T>(to: screen)
+        return NextPath_SwiftUI<Self, Tab.SwiftUITransition<To, T>>(change: .selectedIndex(index(of: path)), keyPath: path, prev: self, transition: transition, state: (self as! ScreenPathPrivate)._state?.next as? ContentScreenState<To>)
+    }
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    public func select<T>(_ path: KeyPath<PathFrom, T>) -> NextPath_SwiftUI<Self, Tab.SwiftUITransition<To, T>> {
         let screen = self[next: path]
         let transition = Tab.SwiftUITransition<To, T>(to: screen)
         return NextPath_SwiftUI<Self, Tab.SwiftUITransition<To, T>>(change: .selectedIndex(index(of: path)), keyPath: path, prev: self, transition: transition, state: (self as! ScreenPathPrivate)._state?.next as? ContentScreenState<To>)
@@ -431,16 +490,27 @@ extension RootRouter where From.Root.Content: View {
     public subscript<T>(move path: KeyPath<From.Root.PathFrom, T>) -> StartPath_SwiftUI<T> where T: SwiftUICompatibleTransition, T.From == From.Root {
         StartPath_SwiftUI<T>(change: .isActive, keyPath: path, transition: from[next: \.root][next: path], state: state.next as? ContentScreenState<From.Root.NestedScreen>)
     }
+    public func move<T>(_ path: KeyPath<From.Root.PathFrom, T>) -> StartPath_SwiftUI<T> where T: SwiftUICompatibleTransition, T.From == From.Root {
+        StartPath_SwiftUI<T>(change: .isActive, keyPath: path, transition: from[next: \.root][next: path], state: state.next as? ContentScreenState<From.Root.NestedScreen>)
+    }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension RootRouter where From.Root.Content: Scene {
     public subscript<T>(move path: KeyPath<From.Root.PathFrom, T>) -> StartPath_SwiftUI<T> where T: SwiftUICompatibleTransition, T.From == From.Root {
         StartPath_SwiftUI<T>(change: .isActive, keyPath: path, transition: from[next: \.root][next: path], state: state.next as? ContentScreenState<From.Root.NestedScreen>)
     }
+    public func move<T>(_ path: KeyPath<From.Root.PathFrom, T>) -> StartPath_SwiftUI<T> where T: SwiftUICompatibleTransition, T.From == From.Root {
+        StartPath_SwiftUI<T>(change: .isActive, keyPath: path, transition: from[next: \.root][next: path], state: state.next as? ContentScreenState<From.Root.NestedScreen>)
+    }
 }
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension RootRouter where From.Root.NestedScreen.Content: _TabsViewIdentity {
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     public subscript<S>(select path: KeyPath<From.Root.PathFrom, S>) -> StartPath_SwiftUI<Tab.SwiftUITransition<From.Root.NestedScreen, S>> {
+        let root = from[next: \.root]
+        let transition = Tab.SwiftUITransition<From.Root.NestedScreen, S>(to: root[next: path])
+        return StartPath_SwiftUI<Tab.SwiftUITransition<From.Root.NestedScreen, S>>(change: .selectedIndex(root.index(of: path)), keyPath: path, transition: transition, state: state.next as? ContentScreenState<From.Root.NestedScreen>)
+    }
+    public func select<S>(_ path: KeyPath<From.Root.PathFrom, S>) -> StartPath_SwiftUI<Tab.SwiftUITransition<From.Root.NestedScreen, S>> {
         let root = from[next: \.root]
         let transition = Tab.SwiftUITransition<From.Root.NestedScreen, S>(to: root[next: path])
         return StartPath_SwiftUI<Tab.SwiftUITransition<From.Root.NestedScreen, S>>(change: .selectedIndex(root.index(of: path)), keyPath: path, transition: transition, state: state.next as? ContentScreenState<From.Root.NestedScreen>)

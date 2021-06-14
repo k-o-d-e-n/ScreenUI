@@ -29,6 +29,14 @@ struct Navigation<S>: Screen where S: Screen {
         base.makeContent(context, router: router)
     }
 }
+extension Navigation: UnwrappedScreen where S: UnwrappedScreen {
+    static func nestedContent(from content: S.Content) -> S.NestedScreen.Content {
+        S.nestedContent(from: content)
+    }
+}
+extension Screen {
+    func navigation() -> Navigation<Self> { Navigation(self) }
+}
 #endif
 
 protocol AppWindow {
